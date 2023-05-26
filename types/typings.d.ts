@@ -35,14 +35,18 @@ interface EventDataTypes {
   description: string;
   image: string;
   location: string;
-  date: string;
+  start_date: string;
+  end_date: string;
   participants: number;
   start_time: string;
   end_time: string;
   liked: boolean;
   featured: boolean;
   website: string;
-  owner: string;
+  country: string;
+  state: string;
+  city: string;
+  venue: string;
   organizer: string;
   total_ticket_count: number;
   total_sold_tickets: number;
@@ -119,7 +123,7 @@ interface CartContextTypes {
     price: number,
     title: string,
     eventId: string,
-    eventItem: EventDataTypes
+    eventItem: EventDataTypes,
   ): void;
   decreaseCartQuantity(id: string): void;
 }
@@ -141,3 +145,32 @@ export type TicketResponseType = {
   previous: StringOrNull;
   results: TicketDataTypes[];
 };
+
+export type RootDrawerParamList = {
+  Home: undefined;
+  Scan: undefined;
+  Ticket: undefined;
+  User: undefined;
+  CreateEvent: undefined;
+};
+
+export type UseReducerState = {
+  user: {
+    email: string;
+    username: string;
+    id: string;
+    image: string;
+  } | null;
+  isSignedIn: boolean;
+};
+export type UserType = {
+  email: string;
+  username: string;
+  id: string;
+  image: string;
+};
+
+export interface TokensType {
+  access: string;
+  refresh: string;
+}

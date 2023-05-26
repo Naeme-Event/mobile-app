@@ -58,3 +58,9 @@ export type RootTabScreenProps<Screen extends keyof RootTabParamList> =
     BottomTabScreenProps<RootTabParamList, Screen>,
     NativeStackScreenProps<RootStackParamList>
   >;
+
+export type RootDrawerScreenProps<Screen extends keyof RootTabParamList> =
+  CompositeScreenProps<
+    DrawerScreenProps<RootTabParamList, Screen>,
+    NativeStackScreenProps<RootTabParamList>
+  >;

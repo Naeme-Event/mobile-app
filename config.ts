@@ -7,5 +7,5 @@ export const androidGoogleCliendId =
 export const dummyUser = {
   name: 'success',
   email: 'successhycenth8@gmail.com',
-  id: 'nouwh0834hibh[a8gf083g0[qfn408hf0[w',
+  id: '992d48f3-b5a4-4169-9b7f-cbd13473e801',
 };

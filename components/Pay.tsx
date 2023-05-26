@@ -12,6 +12,7 @@ import {RootTabParamList} from '../types/types';
 import {useNavigation} from '@react-navigation/native';
 import {useCartContext} from '../providers/CartProvider';
 import {dummyUser} from '../config';
+import api from '../api';
 
 type TabProps = NativeStackNavigationProp<RootTabParamList, 'Ticket'>;
 export default function Checkout() {
@@ -39,22 +40,25 @@ export default function Checkout() {
             jsonValue != null ? JSON.parse(jsonValue) : null;
           cartItems.map(item => {
             (async () => {
-              const response = await fetch(`${BaseUrl}/my-tickets/`, {
-                method: 'POST',
-                headers: {
-                  Accept: 'application/json',
-                  'Content-Type': 'application/json',
-                  Authorization: `Bearer ${tokens.access}`,
-                },
-                body: JSON.stringify({
+              const response = await api.post(
+                `${BaseUrl}/my-tickets/`,
+                {
                   event: item.event,
                   ticket: item.id,
                   user: user,
                   quantity: item.quantity,
                   transactionId: data.transactionRef.transaction,
-                }),
-              });
+                },
+                {
+                  headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${tokens.access}`,
+                  },
+                },
+              );
               if (response.status === 201) {
+                console.log({response});
                 setCartItems([]);
                 navigation.navigate('Ticket');
                 return true;

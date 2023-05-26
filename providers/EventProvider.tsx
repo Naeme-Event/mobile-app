@@ -17,7 +17,8 @@ interface EventCartContextType {
   setEventData: React.Dispatch<
     React.SetStateAction<EventDataTypes[] | undefined>
   >;
-  fetchData(url: any): Promise<EventDataTypes[] | undefined>;
+  fetchData: (url: any) => Promise<void>;
+  fetchInitialData: (url: any) => Promise<void>;
   loadMoreItem: () => void;
   handleRefresh: () => void;
   refresh: boolean;
@@ -40,7 +41,7 @@ type LocationType = {
 export const EventContext = createContext({} as EventCartContextType);
 
 import {EventDataTypes, ResponseType} from '../types/typings';
-import {BaseUrl} from '../config';
+import api from '../api';
 
 export default function EventProvider({children}: {children: ReactNode}) {
   const [featuredEvent, setFeaturedEvent] = useState<EventDataTypes[]>([]);
@@ -58,7 +59,6 @@ export default function EventProvider({children}: {children: ReactNode}) {
   });
 
   const loadMoreItem = () => {
-    console.log("'''''''''''''loading''''''''''");
     setLoading(true);
     if (searching === false) {
       if (nextPage !== null) {
@@ -89,40 +89,57 @@ export default function EventProvider({children}: {children: ReactNode}) {
     }
   };
 
-  const Url = `${BaseUrl}/events`;
+  const Url = '/events';
 
-  const fetchData = async (url: any) => {
+  const fetchData = useCallback(
+    async (url: any) => {
+      try {
+        console.log('-------called from fetchData');
+        setLoading(true);
+        // setSearching(false);
+        const response = await api.get(url);
+        const data: ResponseType = await response.data;
+        if (data.next !== null) {
+          setNextPage(data?.next);
+        }
+        setPreviousPage(data.previous);
+        setRefresh(false);
+        setEventData(data?.results);
+        setLoading(false);
+      } catch (e) {
+        console.log(e);
+      }
+    },
+    [eventData],
+  );
+
+  const fetchInitialData = async (url: any) => {
+    setLoading(true);
     try {
       setSearching(false);
-      const response = await fetch(url);
-      const data: ResponseType = await response.json();
+      const response = await api.get(url);
+      const data: ResponseType = await response.data;
       if (data.next !== null) {
         setNextPage(data?.next);
       }
       setPreviousPage(data.previous);
       setRefresh(false);
+      setEventData(data?.results);
       setLoading(false);
-      return data?.results;
     } catch (e) {
       console.log(e);
     }
   };
 
   const handleRefresh = async () => {
+    console.log('handle---------called');
     setLoading(true);
-    const data: EventDataTypes[] | undefined = await fetchData(Url);
-    setEventData(data);
-    setLoading(false);
-    return data;
+    setSearching(false);
+    fetchData(Url);
   };
 
   useEffect(() => {
-    setLoading(true);
-    (async () => {
-      const data: EventDataTypes[] | undefined = await fetchData(Url);
-      setEventData(data);
-      setLoading(false);
-    })();
+    fetchData(Url);
   }, []);
 
   return (
@@ -133,6 +150,7 @@ export default function EventProvider({children}: {children: ReactNode}) {
         setLoading,
         eventData,
         setEventData,
+        fetchInitialData,
         fetchData,
         nextPage,
         setNextPage,

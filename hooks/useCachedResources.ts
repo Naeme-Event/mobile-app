@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
 import {BaseUrl} from '../config';
+import api from '../api';
 
 type Fonts = {
   'Montserrat-Bold': string;
@@ -17,47 +17,32 @@ export interface TokensType {
 export default function useCachedResources() {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
 
-  const url = `${BaseUrl}/token/verify/`;
-  const refreshUrl = `${BaseUrl}/token/refresh/`;
+  const url = '/token/verify/';
+  const refreshUrl = `/token/refresh/`;
   const checkLoginCredentials = async () => {
-    const jsonValue = await AsyncStorage.getItem('naemeUser');
+    const jsonValue = await AsyncStorage.getItem('@tokens');
     const tokens: TokensType = jsonValue != null ? JSON.parse(jsonValue) : null;
-    console.log({tokens});
     if (tokens) {
       try {
-        const verifyRequestOptions = {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({token: tokens.access}),
-        };
-
-        console.log(tokens.access);
-        const res = await fetch(url, verifyRequestOptions);
-        if (res.ok) {
+        const res = await api.post(
+          url,
+          {
+            token: tokens.access,
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
+        );
+        if (res.status == 200) {
           return;
         } else {
-          try {
-            const refreshRequestOptions = {
-              method: 'POST',
-              headers: {'Content-Type': 'application/json'},
-              body: JSON.stringify({token: tokens.refresh}),
-            };
-            const res = await fetch(refreshUrl, refreshRequestOptions);
-            if (res.ok) {
-              const data = await res.json();
-              const jsonValue = JSON.stringify(data);
-              await AsyncStorage.setItem('naemeUser', jsonValue);
-              return;
-            } else {
-              await AsyncStorage.removeItem('naemeUser');
-              return null;
-            }
-          } catch (e) {
-            console.log(e);
-          }
+          await AsyncStorage.removeItem('@tokens');
         }
+        return;
       } catch (e) {
-        console.log(e);
+        console.log('-------', e);
       }
     }
 

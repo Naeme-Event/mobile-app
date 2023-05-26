@@ -11,13 +11,13 @@ import {
   RootStackScreenProp,
   RootTabScreenProps,
   TabScreenProps,
-} from '../../types/types';
-import {PaidTicketDataTypes} from '../../types/typings';
+} from '../types/types';
 
-import axios from 'axios';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
-import Text from '../../components/Text';
-import {BaseUrl} from '../../config';
+import {BaseUrl} from '../config';
+import api from '../api';
+import {Text} from 'react-native-paper';
+import {PaidTicketDataTypes} from '../types/typings';
 
 type NavProp = NavigationProp<RootStackParamList, 'MyTicketDetail'>;
 
@@ -49,7 +49,7 @@ export default function ScannerScreen({route}: TabScreenProps<'Scan'>) {
     data: string;
   }) => {
     setScanned(true);
-    const response = await axios.get(`${BaseUrl}/my-tickets/${data}`);
+    const response = await api.get('/my-tickets/${data}');
     const responseData: PaidTicketDataTypes = await response.data;
     console.log(responseData);
     if (data) {
@@ -71,7 +71,9 @@ export default function ScannerScreen({route}: TabScreenProps<'Scan'>) {
     <SafeAreaView className="flex-1 bg-[#090808]">
       <View className="mt-20">
         <Text
-          font="Montserrat-Bold"
+          style={{
+            fontFamily: 'Montserrat-Bold',
+          }}
           className="text-xl text-rose-400 text-center">
           Ticket QRCODE Scanner
         </Text>

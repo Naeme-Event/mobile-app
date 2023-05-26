@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import moment from 'moment';
 import {View} from 'react-native';
 import {StringOrNull} from '../types/typings';
-import Text from '../components/Text';
+import {Text} from 'react-native-paper';
 
 interface Props {
   date: StringOrNull;
@@ -25,22 +25,38 @@ export const Countdown = ({date, end_time}: Props) => {
   if (timeBetween.asSeconds() < 0) {
     return (
       <View>
-        <Text className="text-xl text-[#080808]">Event Completed🙂</Text>
+        <Text className="text-xl text-[#080808]">Event Expired</Text>
       </View>
     );
   } else {
     return (
       <View className="flex-row items-center">
-        <Text font="Montserrat-Bold" className="mr-1 text-2xl text-gray-700">
+        <Text
+          style={{
+            fontFamily: 'Montserrat-Bold',
+          }}
+          className="mr-1 text-xl text-[#1CAE81]">
           {timeBetween.days()}d{' '}
         </Text>
-        <Text font="Montserrat-Bold" className="mr-1 text-2xl text-gray-700">
+        <Text
+          style={{
+            fontFamily: 'Montserrat-Bold',
+          }}
+          className="mr-1 text-xl text-[#1CAE81]">
           {timeBetween.hours()}h{' '}
         </Text>
-        <Text font="Montserrat-Bold" className="mr-1 text-2xl text-gray-700">
+        <Text
+          style={{
+            fontFamily: 'Montserrat-Bold',
+          }}
+          className="mr-1 text-xl text-[#1CAE81]">
           {timeBetween.minutes()}min{' '}
         </Text>
-        <Text font="Montserrat-Bold" className="mr-1 text-2xl text-gray-700">
+        <Text
+          style={{
+            fontFamily: 'Montserrat-Bold',
+          }}
+          className="mr-1 text-xl text-[#1CAE81]">
           {timeBetween.seconds()}s{' '}
         </Text>
       </View>

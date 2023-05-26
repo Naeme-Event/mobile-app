@@ -1,17 +1,59 @@
+import React, {useState} from 'react';
 import {StatusBar, Text} from 'react-native';
 import {
-  ActivityIndicator,
-  Image,
-  Platform,
   SafeAreaView,
   TouchableOpacity,
   View,
   // Text,
 } from 'react-native';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import {setUser} from '../redux-toolkit/authSlice';
+import {dummyUser} from '../config';
+import {useAppDispatch} from '../redux-toolkit/hook';
+import {UserType} from '../types/typings';
+import {ActivityIndicator} from 'react-native-paper';
+import api from '../api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SignIn({}) {
-  // const { googleAuth } = useAuthContext();
+  const dispatch = useAppDispatch();
+  const [loading, setLoading] = useState(false);
 
+  const handleSignIn = async () => {
+    try {
+      setLoading(true);
+      await GoogleSignin.hasPlayServices();
+      const {idToken} = await GoogleSignin.signIn();
+
+      if (idToken) {
+        await GoogleSignin.clearCachedAccessToken(idToken);
+        await api
+          .post('/account/google/', {
+            auth_token: idToken,
+          })
+          .then(res => {
+            const data = res.data;
+            const user: UserType = {
+              email: data?.email,
+              id: data?.id,
+              username: data.username,
+              image: data.image,
+            };
+            AsyncStorage.setItem('@tokens', JSON.stringify(data.tokens));
+            dispatch(setUser(user));
+            setLoading(false);
+            return;
+          })
+          .catch(e => {
+            console.log(e.message);
+            setLoading(false);
+          });
+      }
+    } catch (error) {
+      console.log('Error signing in:', error);
+      setLoading(false);
+    }
+  };
   return (
     <SafeAreaView className="bg-gray-100 pt-10 h-full w-full items-center">
       <StatusBar barStyle={'dark-content'} backgroundColor={'#f4f4f4'} />
@@ -34,15 +76,19 @@ export default function SignIn({}) {
 
       <View className="items-center absolute bottom-20">
         <TouchableOpacity
-          // onPress={() => googleAuth()}
+          onPress={handleSignIn}
           className="px-10 py-4 bg-[#000] rounded-md">
-          <Text
-            style={{
-              fontFamily: 'Montserrat-SemiBold',
-            }}
-            className="text-sm text-gray-100 text-center">
-            Continue with google
-          </Text>
+          {loading ? (
+            <ActivityIndicator className="px-16" color="#ffffff" />
+          ) : (
+            <Text
+              style={{
+                fontFamily: 'Montserrat-SemiBold',
+              }}
+              className="text-sm text-gray-100 text-center">
+              Continue with google
+            </Text>
+          )}
         </TouchableOpacity>
       </View>
     </SafeAreaView>

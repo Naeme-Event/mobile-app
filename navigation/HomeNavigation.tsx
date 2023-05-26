@@ -1,76 +1,224 @@
-import {
-  BottomTabScreenProps,
-  createBottomTabNavigator,
-} from '@react-navigation/bottom-tabs';
-import {RootTabParamList} from '../types/types';
-import HomeScreen from '../screens/tabs/HomeScreen';
-import TicketScreen from '../screens/tabs/TicketScreen';
-import ScannerScreen from '../screens/tabs/ScanScreen';
-import UserScreen from '../screens/tabs/UserScreen';
-
 import Feather from 'react-native-vector-icons/Feather';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import {Text, View, useWindowDimensions} from 'react-native';
+import {createDrawerNavigator} from '@react-navigation/drawer';
+import {RootDrawerParamList} from '../types/typings';
+import {dummyUser} from '../config';
+import HomeScreen from '../screens/HomeScreen';
+import TicketScreen from '../screens/TicketScreen';
+import ScannerScreen from '../screens/ScanScreen';
+import UserScreen from '../screens/UserScreen';
+import CreateEventScreen from '../screens/CreateEventScreen';
+import AppDrawer from '../screens/AppDrawer';
 
-const Tab = createBottomTabNavigator<RootTabParamList>();
+const Drawer = createDrawerNavigator<RootDrawerParamList>();
 
-export type useTabNavigationProps = BottomTabScreenProps<
-  RootTabParamList,
-  'Home'
->;
+export default function HomeDrawerNavigator() {
+  const user = dummyUser;
 
-export default function HomeTabs() {
   return (
-    <Tab.Navigator
-      initialRouteName="Home"
+    <Drawer.Navigator
+      drawerContent={props => <AppDrawer {...props} />}
       screenOptions={({route}) => ({
         headerShown: false,
-        tabBarStyle: {
-          backgroundColor: '#060707',
+        drawerActiveTintColor: '#fff',
+        drawerInactiveTintColor: '#333',
+        drawerContentContainerStyle: {
+          width: '100%',
         },
-        tabBarShowLabel: false,
-        tabBarInactiveTintColor: '#dddddd',
-        tabBarIcon: ({focused, color, size}) => {
-          if (route.name === 'Home') {
-            return (
-              <Feather
-                name="home"
-                size={24}
-                color={focused ? '#fc3c44' : '#dddddd'}
-              />
-            );
-          } else if (route.name === 'Ticket') {
-            return (
-              <MaterialCommunityIcons
-                name="ticket-confirmation-outline"
-                size={24}
-                color={focused ? '#fc3c44' : '#dddddd'}
-              />
-            );
-          } else if (route.name === 'Scan') {
-            return (
-              <MaterialIcons
-                name="qr-code"
-                size={24}
-                color={focused ? '#fc3c44' : '#dddddd'}
-              />
-            );
-          } else if (route.name === 'User') {
-            return (
-              <AntDesign
-                name="user"
-                size={24}
-                color={focused ? '#fc3c44' : '#dddddd'}
-              />
-            );
-          }
+        drawerItemStyle: {
+          marginVertical: -4,
+        },
+        drawerStyle: {
+          width: 330,
+          borderBottomRightRadius: 30,
+          borderTopRightRadius: 30,
+          backgroundColor: '#F1F1F1',
+        },
+        drawerLabelStyle: {
+          marginLeft: -25,
+          fontSize: 14,
         },
       })}>
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Ticket" component={TicketScreen} />
-      <Tab.Screen name="Scan" component={ScannerScreen} />
-      <Tab.Screen name="User" component={UserScreen} />
-    </Tab.Navigator>
+      <Drawer.Screen
+        name="Home"
+        options={() => ({
+          drawerIcon: ({color, focused}) => (
+            <Feather
+              name="home"
+              size={28}
+              color={focused ? '#1CAE81' : '#cdcdcd'}
+            />
+          ),
+          drawerLabel: ({focused}) => (
+            <View
+              style={{
+                backgroundColor: focused ? '#1CAE81' : '#eeeeee',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginLeft: -10,
+                borderRadius: 7,
+                width: 225,
+                paddingHorizontal: 10,
+                paddingVertical: 10,
+              }}>
+              <Text
+                style={{
+                  fontFamily: 'Montserrat-SemiBold',
+                  color: focused ? '#fff' : 'gray',
+                }}>
+                Home
+              </Text>
+            </View>
+          ),
+        })}
+        component={HomeScreen}
+      />
+
+      <Drawer.Screen
+        name="CreateEvent"
+        options={() => ({
+          drawerIcon: ({color, focused}) => (
+            <Ionicons
+              name="ios-create-outline"
+              size={28}
+              color={focused ? '#1CAE81' : '#676A65'}
+            />
+          ),
+          drawerLabel: ({focused}) => (
+            <View
+              style={{
+                backgroundColor: focused ? '#1CAE81' : '#eeeeee',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginLeft: -10,
+                borderRadius: 7,
+                width: 225,
+                paddingHorizontal: 10,
+                paddingVertical: 10,
+              }}>
+              <Text
+                style={{
+                  fontFamily: 'Montserrat-SemiBold',
+                  color: focused ? '#fff' : '#333',
+                }}>
+                Create Event
+              </Text>
+            </View>
+          ),
+        })}
+        component={CreateEventScreen}
+      />
+
+      <Drawer.Screen
+        name="Ticket"
+        options={() => ({
+          drawerIcon: ({color, focused}) => (
+            <MaterialCommunityIcons
+              name="ticket-outline"
+              size={28}
+              color={focused ? '#1CAE81' : '#676A65'}
+            />
+          ),
+          drawerLabel: ({focused}) => (
+            <View
+              style={{
+                backgroundColor: focused ? '#1CAE81' : '#eeeeee',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginLeft: -10,
+                borderRadius: 7,
+                width: 225,
+                paddingHorizontal: 10,
+                paddingVertical: 10,
+              }}>
+              <Text
+                style={{
+                  fontFamily: 'Montserrat-SemiBold',
+                  color: focused ? '#fff' : '#333',
+                }}>
+                Ticket
+              </Text>
+            </View>
+          ),
+        })}
+        component={TicketScreen}
+      />
+      <Drawer.Screen
+        name="Scan"
+        options={() => ({
+          drawerIcon: ({color, focused}) => (
+            <Ionicons
+              name="scan"
+              size={28}
+              color={focused ? '#1CAE81' : '#676A65'}
+            />
+          ),
+          drawerLabel: ({focused}) => (
+            <View
+              style={{
+                backgroundColor: focused ? '#1CAE81' : '#eeeeee',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginLeft: -10,
+                borderRadius: 7,
+                width: 225,
+                paddingHorizontal: 10,
+                paddingVertical: 10,
+              }}>
+              <Text
+                style={{
+                  fontFamily: 'Montserrat-SemiBold',
+                  color: focused ? '#fff' : '#333',
+                }}>
+                Scan
+              </Text>
+            </View>
+          ),
+        })}
+        component={ScannerScreen}
+      />
+      <Drawer.Screen
+        name="User"
+        options={() => ({
+          drawerIcon: ({color, focused}) => (
+            <MaterialCommunityIcons
+              name="view-dashboard"
+              size={28}
+              color={focused ? '#1CAE81' : '#676A65'}
+            />
+          ),
+          drawerLabel: ({focused}) => (
+            <View
+              style={{
+                backgroundColor: focused ? '#1CAE81' : '#eeeeee',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginLeft: -10,
+                borderRadius: 7,
+                width: 225,
+                paddingHorizontal: 10,
+                paddingVertical: 10,
+              }}>
+              <Text
+                style={{
+                  fontFamily: 'Montserrat-SemiBold',
+                  color: focused ? '#fff' : '#333',
+                }}>
+                Dashboard
+              </Text>
+            </View>
+          ),
+        })}
+        component={UserScreen}
+      />
+    </Drawer.Navigator>
   );
 }

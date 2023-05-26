@@ -7,20 +7,23 @@ import MyTicketDetailScreen from '../screens/MyTicketDetailScreen';
 import DetailScreen from '../screens/DetailScreen';
 import TicketCartScreen from '../screens/TicketCartScreen';
 import {dummyUser} from '../config';
-import HomeTabs from './HomeNavigation';
+import HomeDrawerNavigator from './HomeNavigation';
+import {useSelector, useDispatch} from 'react-redux';
+import {useAppSelector} from '../redux-toolkit/hook';
+import React from 'react';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-export function RootNavigator() {
+function RootNavigator() {
   //   const {user} = useUserContext();
-  const user = dummyUser;
+  const user = useAppSelector(state => state.users.user);
 
   return (
     <Stack.Navigator>
-      {user.email ? (
+      {user?.email ? (
         <Stack.Screen
           name="Main"
-          component={HomeTabs}
+          component={HomeDrawerNavigator}
           options={{headerShown: false}}
         />
       ) : (
@@ -31,23 +34,17 @@ export function RootNavigator() {
         />
       )}
 
-      <Stack.Group>
-        <Stack.Screen
-          name="CreateEvent"
-          component={CreateEventScreen}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="CreateTicket"
-          component={CreateTicketScreen}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="MyTicketDetail"
-          component={MyTicketDetailScreen}
-          options={{headerShown: false}}
-        />
-      </Stack.Group>
+      {/* <Stack.Screen
+        name="CreateEvent"
+        component={CreateEventScreen}
+        options={{headerShown: false}}
+      /> */}
+
+      <Stack.Screen
+        name="MyTicketDetail"
+        component={MyTicketDetailScreen}
+        options={{headerShown: false}}
+      />
 
       <Stack.Group screenOptions={{presentation: 'modal'}}>
         <Stack.Screen
@@ -64,3 +61,4 @@ export function RootNavigator() {
     </Stack.Navigator>
   );
 }
+export default RootNavigator;

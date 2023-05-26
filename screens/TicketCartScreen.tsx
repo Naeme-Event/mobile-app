@@ -10,7 +10,6 @@ import {
 import React, {useLayoutEffect, useState} from 'react';
 import {RootStackScreenProps} from '../types/types';
 import {formatCurrency, formatDate} from '../utils/formatter';
-import axios from 'axios';
 
 import {
   ResponseType,

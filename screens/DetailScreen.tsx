@@ -1,18 +1,12 @@
-import {
-  View,
-  TouchableOpacity,
-  Platform,
-  Animated,
-  Pressable,
-} from 'react-native';
+import {View, TouchableOpacity, Platform, Animated, Image} from 'react-native';
 import React, {useRef} from 'react';
 import {RootStackScreenProps} from '../types/types';
 import Details from '../components/Details';
-import Text from '../components/Text';
 import {dummyUser} from '../config';
 
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import {Text} from 'react-native-paper';
 
 export const BANNER_H = 400;
 export const TOPNAVI_H = 0;
@@ -29,11 +23,14 @@ export default function DetailScreen({
       <View className="w-full absolute bottom-0 py-4 mb-2 items-center z-10">
         <TouchableOpacity
           onPress={() => navigation.navigate('TicketCart', {...data})}
-          className="bg-[#000000] flex-row px-20 py-3 rounded-xl shadow-md w-3/5 mx-auto">
-          <Text font="Montserrat-Bold" className="text-[#f94c57] text-xs mr-1">
+          className="bg-[#000000] flex-row px-20 py-3 rounded-xl shadow-md   mx-auto">
+          <Text
+            style={{
+              fontFamily: 'Montserrat-Bold',
+            }}
+            className="text-[#1CAE81] text-lg mr-1">
             Book Now
           </Text>
-          <FontAwesome name="ticket" size={12} color="#f94c57" />
         </TouchableOpacity>
       </View>
       <Animated.ScrollView
@@ -44,11 +41,11 @@ export default function DetailScreen({
         )}
         showsVerticalScrollIndicator={false}>
         {/*// @ts-ignore */}
-        <View className={styles.bannerContainer}>
-          <Animated.Image
-            style={styles.banner(scrollA)}
+        <View>
+          <Image
             source={{uri: data.image}}
             resizeMode="cover"
+            className="h-[300px]"
           />
         </View>
 
@@ -68,35 +65,3 @@ export default function DetailScreen({
     </View>
   );
 }
-
-const styles = {
-  bannerContainer: {
-    marginTop: -1000,
-    paddingTop: 1000,
-    alignItems: 'center',
-    overflow: 'hidden',
-  },
-  banner: (scrollA: Animated.Value) => ({
-    height: BANNER_H,
-    width: '200%',
-    transform: [
-      {
-        translateY: scrollA.interpolate({
-          inputRange: [-BANNER_H, 0, BANNER_H, BANNER_H + 1],
-          outputRange: [-BANNER_H / 2, 0, BANNER_H * 0.75, BANNER_H * 0.75],
-        }),
-      },
-      {
-        scale: scrollA.interpolate({
-          inputRange: [-BANNER_H, 0, BANNER_H, BANNER_H + 1],
-          outputRange: [2, 1, 0.5, 0.5],
-        }),
-      },
-    ],
-  }),
-};
-
-// f94c57;
-// fc3c44;
-
-// c2cad7;

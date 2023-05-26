@@ -1,0 +1,7 @@
+{
+  "name": "naeme-mobile-app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "custom"
+}

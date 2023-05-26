@@ -9,8 +9,6 @@ import {
 import React, {useEffect, useLayoutEffect, useState} from 'react';
 import {RootStackScreenProps} from '../types/types';
 import {Countdown} from '../utils/CountDown';
-import axios from 'axios';
-
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -20,6 +18,7 @@ import {TokensType} from '../hooks/useCachedResources';
 import Text from '../components/Text';
 import {BaseUrl, dummyUser} from '../config';
 import {formatCurrency, formatTime} from '../utils/formatter';
+import api from '../api';
 
 export default function MyTicketDetailScreen({
   navigation,
@@ -39,9 +38,9 @@ export default function MyTicketDetailScreen({
     setLoading(true);
     if (tokens.access && data?.id) {
       if (user?.id === data.ticket_admin) {
-        axios
+        api
           .patch(
-            `${BaseUrl}/my-tickets/${data?.id}/`,
+            '/my-tickets/${data?.id}/',
             {used: true},
             {
               headers: {

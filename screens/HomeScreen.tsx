@@ -1,35 +1,30 @@
-import React, {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react';
 import {
   FlatList,
   Platform,
   RefreshControl,
-  ScrollView,
+  Image,
   View,
   StatusBar,
 } from 'react-native';
-import NotFound from '../../components/Empty';
-import EventCard from '../../components/EventCard';
-import FeaturedEvent from '../../components/FeaturedEvent';
-import HomeHeader from '../../components/HomeHeader';
-import {Loader} from '../../components/Loader';
-import Search from '../../components/Search';
-import {TabScreenProps} from '../../types/types';
-import {useEventContext} from '../../hooks/useEvent';
+import NotFound from '../components/Empty';
+import EventCard from '../components/EventCard';
+import FeaturedEvent from '../components/FeaturedEvent';
+import HomeHeader from '../components/HomeHeader';
+import Header from '../components/Header';
+import {Loader} from '../components/Loader';
+import Search from '../components/Search';
+import {RootDrawerScreenProps, TabScreenProps} from '../types/types';
+import {useEventContext} from '../hooks/useEvent';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
-const HomeScreen = ({navigation, route}: TabScreenProps<'Home'>) => {
+const HomeScreen = ({navigation, route}: RootDrawerScreenProps<'Home'>) => {
   const {eventData, loading, loadMoreItem, refresh, handleRefresh, searching} =
     useEventContext();
 
   return (
-    <View className="bg-gray-200">
+    <View className="bg-gray-100">
       <StatusBar barStyle={'dark-content'} backgroundColor={'#e5e7eb'} />
-      <HomeHeader />
       <FlatList
         contentContainerStyle={{paddingBottom: 200}}
         data={eventData}
@@ -40,8 +35,8 @@ const HomeScreen = ({navigation, route}: TabScreenProps<'Home'>) => {
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={() => (
           <View>
-            {/* <Search /> */}
-            <FeaturedEvent />
+            <HomeHeader />
+            {!searching && <FeaturedEvent />}
           </View>
         )}
         ListFooterComponent={<Loader isLoading={loading} />}
@@ -61,7 +56,7 @@ const HomeScreen = ({navigation, route}: TabScreenProps<'Home'>) => {
         }
       />
 
-      <View className="absolute top-0 bottom-0 right-0 left-0 -z-10"></View>
+      <Header navigation={navigation} route={route} />
     </View>
   );
 };

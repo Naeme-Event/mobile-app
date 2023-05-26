@@ -13,17 +13,17 @@ import {
   StatusBar,
 } from 'react-native';
 
-import {Loader, MyEventLoaderScreen} from '../../components/Loader';
-import MyEvent from '../../components/MyEvent';
-import {useEventContext} from '../../hooks/useEvent';
+import {Loader, MyEventLoaderScreen} from '../components/Loader';
+import MyEvent from '../components/MyEvent';
+import {useEventContext} from '../hooks/useEvent';
 import {
   RootStackScreenProps,
   RootTabScreenProps,
   TabScreenProps,
-} from '../../types/types';
-import {EventDataTypes} from '../../types/typings';
-import {BaseUrl, dummyUser} from '../../config';
-import Text from '../../components/Text';
+} from '../types/types';
+import {EventDataTypes} from '../types/typings';
+import {BaseUrl, dummyUser} from '../config';
+import Text from '../components/Text';
 
 export default function UserScreen({
   navigation,
@@ -35,14 +35,16 @@ export default function UserScreen({
   const [logoutLoading, setlogoutLoading] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const Url = `${BaseUrl}/events/?owner=${user?.id}`;
-  useLayoutEffect(() => {
-    (async () => {
-      const events: EventDataTypes[] = await fetchData(Url);
-      setMyEvent(events);
-      setLoading(false);
-    })();
-  }, []);
+  const Url = '/events/?owner=${user?.id}';
+  // useLayoutEffect(() => {
+  //   (async () => {
+  //     const events: EventDataTypes[] | undefined = await fetchData(Url);
+  //     if (events) {
+  //       setMyEvent(events);
+  //     }
+  //     setLoading(false);
+  //   })();
+  // }, []);
 
   return (
     <View className="flex-1">
