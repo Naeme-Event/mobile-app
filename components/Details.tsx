@@ -22,7 +22,7 @@ import {Text} from 'react-native-paper';
 
 export default function Details(props: EventDataTypes) {
   const dateime = moment(
-    props.start_date + ' ' + props?.start_time,
+    props.end_date + ' ' + props?.start_time,
     'DD/MM/YYYY HH:mm',
   );
   const time = moment(props.start_time, 'HH:mm').format('h:mm A');
@@ -62,7 +62,7 @@ export default function Details(props: EventDataTypes) {
   const Lng: number = -118.192395;
   const Lat: number = 33.769327;
   return (
-    <View className="rounded-[30px] flex-1 px-6 pb-20">
+    <View className="rounded-[30px] flex-1 px-6 pb-20 bg-white -mt-7">
       <View className="">
         <Animated.View
           style={[{opacity}]}

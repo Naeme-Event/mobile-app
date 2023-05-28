@@ -8,13 +8,13 @@ import Text from './Text';
 import {TokensType} from '../hooks/useCachedResources';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {RootTabParamList} from '../types/types';
+import {RootDrawerParamList} from '../types/types';
 import {useNavigation} from '@react-navigation/native';
 import {useCartContext} from '../providers/CartProvider';
 import {dummyUser} from '../config';
 import api from '../api';
 
-type TabProps = NativeStackNavigationProp<RootTabParamList, 'Ticket'>;
+type TabProps = NativeStackNavigationProp<RootDrawerParamList, 'Ticket'>;
 export default function Checkout() {
   const {cartItems, cartTotal, setCartItems} = useCartContext();
   const user = dummyUser;

@@ -31,6 +31,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Dropdown} from 'react-native-element-dropdown';
 import {Text} from 'react-native-paper';
 import api from '../api';
+import {useAppSelector} from '../redux-toolkit/hook';
 
 const data = [
   {label: 'Item 1', value: '1'},
@@ -75,7 +76,7 @@ export default function CreateEventScreen({
   const opacity = useRef(new Animated.Value(0)).current;
   const imageOpacity = useRef(new Animated.Value(0)).current;
   const [loading, setLoading] = useState(false);
-  const user = dummyUser;
+  const user = useAppSelector(state => state.users.user);
 
   // states ended
 
@@ -233,7 +234,7 @@ export default function CreateEventScreen({
 
     let Uri = image?.uri;
     let fileName = Uri?.split('/').pop();
-
+    console.log({seletedcategory});
     // @ts-ignore */
     let match: RegExpExecArray | null = /\.(\w+)$/.exec(fileName);
     let type = match ? `image/${match[1]}` : `image`;
@@ -241,22 +242,19 @@ export default function CreateEventScreen({
     const end_date = moment(endDate).format('YYYY-MM-DD');
     const start_time = startTime?.toLocaleTimeString();
     const end_time = endTime?.toLocaleTimeString();
-    const jsonValue = await AsyncStorage.getItem('naemeUser');
+    const jsonValue = await AsyncStorage.getItem('@tokens');
     const tokens: TokensType = jsonValue != null ? JSON.parse(jsonValue) : null;
-    const access = JSON.parse(
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjg1NjE4ODc1LCJpYXQiOjE2ODUwMTQwNzUsImp0aSI6ImIyNGJkNjY1YmFiYzRkNDI5YzExMjQ3YjIyNGFlYzFlIiwidXNlcl9pZCI6Ijk5MmQ0OGYzLWI1YTQtNDE2OS05YjdmLWNiZDEzNDczZTgwMSJ9.AiA8WD1Gio6WuySZy4f3B6EHm7cxpkYmh2ABrukQ38k',
-    );
 
-    console.log({start_date, end_time});
     const formData = new FormData();
     formData.append('title', data.title);
     formData.append('description', data.description);
-    formData.append('image', {
-      name: fileName,
-      type: type,
-      uri: Platform.OS === 'ios' ? Uri?.replace('file://', '') : Uri,
-      size: image?.size,
-    });
+    formData.append('image', image);
+    // formData.append('image', {
+    //   name: fileName,
+    //   type: type,
+    //   uri: Platform.OS === 'ios' ? Uri?.replace('file://', '') : Uri,
+    //   size: image?.size,
+    // });
     formData.append('category', seletedcategory);
     formData.append('country', data.country);
     formData.append('state', data.state);
@@ -268,7 +266,7 @@ export default function CreateEventScreen({
     formData.append('end_time', end_time);
     formData.append('website', data.website);
     formData.append('owner', user?.id);
-    formData.append('organizer', user.name);
+    formData.append('organizer', user?.username);
     formData.append('terms', data.terms);
 
     const url = `${BaseUrl}/events/`;
@@ -276,22 +274,23 @@ export default function CreateEventScreen({
       method: 'POST',
       headers: {
         Accept: 'application/json',
-        Authorization: `Bearer ${access}`,
+        Authorization: `Bearer ${tokens.access}`,
       },
       body: formData,
     };
     try {
       setLoading(true);
-      const response = await fetch(url, requestOptions);
-      const data: EventDataTypes = await response.json();
-      console.log(response);
-      if (response.status === 201) {
-        const jsonValue = JSON.stringify(data.id);
-        AsyncStorage.setItem('eventId', jsonValue);
-        navigation.navigate('CreateTicket');
+      if (tokens.access) {
+        const response = await fetch(url, requestOptions);
+        const resData: EventDataTypes = await response.json();
+        console.log(resData);
         setLoading(false);
+        if (response.status === 201) {
+          navigation.navigate('CreateTicket', {eventId: resData.id});
+          setLoading(false);
+        }
       }
-      setLoading(false);
+
       return data;
     } catch (error) {
       setLoading(false);
@@ -314,12 +313,12 @@ export default function CreateEventScreen({
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <Pressable
-        onPress={() => {
-          setShowEndTime(false);
-          setShowStartTime(false);
-          setShowStartDate(false);
-          setShowEndDate(false);
-        }}
+        // onPress={() => {
+        //   setShowEndTime(false);
+        //   setShowStartTime(false);
+        //   setShowStartDate(false);
+        //   setShowEndDate(false);
+        // }}
         className="flex-1 pb-32 px-6 bg-white">
         <StatusBar animated={true} barStyle="dark-content" />
         <SafeAreaView className={Platform.OS === 'ios' ? 'mt-10' : 'mt-7'}>
@@ -865,13 +864,13 @@ export default function CreateEventScreen({
                     : 'bg-[#000] rounded-xl'
                 }>
                 {loading ? (
-                  <ActivityIndicator size={'small'} className="p-3 px-20" />
+                  <ActivityIndicator size={'small'} className="py-2 px-20" />
                 ) : (
                   <Text
                     className={
                       image === null
                         ? 'px-14 py-4 text-gray-100'
-                        : 'px-14 py-4 text-rose-300'
+                        : 'px-14 py-4 text-white'
                     }
                     style={{
                       fontFamily: 'Montserrat-Bold',

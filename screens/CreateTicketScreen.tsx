@@ -7,9 +7,10 @@ import {
   Platform,
   TextInput,
   StatusBar,
+  Alert,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
-
+import {CommonActions} from '@react-navigation/native';
 import {RootStackParamList, RootStackScreenProps} from '../types/types';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {Controller, useForm} from 'react-hook-form';
@@ -17,11 +18,29 @@ import {fadeIn} from './CreateEventScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {TokensType} from '../hooks/useCachedResources';
 
-import {EventDataTypes, ResponseType, TicketDataTypes} from '../types/typings';
+import {EventDataTypes, TicketDataTypes} from '../types/typings';
 
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import Text from '../components/Text';
 import {BaseUrl, dummyUser} from '../config';
+import {useAppSelector} from '../redux-toolkit/hook';
+import api from '../api';
+import {Text} from 'react-native-paper';
+import axios from 'axios';
+
+const showAlert = () =>
+  Alert.alert(
+    'Ticket created Successfully',
+    'You can add more tickets or press done to complete',
+    [
+      {
+        text: 'OK',
+        onPress: () => console.log('OK Pressed'),
+      },
+    ],
+    {
+      cancelable: true,
+    },
+  );
 
 export default function CreateTicketScreen({
   navigation,
@@ -30,15 +49,9 @@ export default function CreateTicketScreen({
   const [loading, setLoading] = useState(false);
   const [exitLoading, setExitLoading] = useState(false);
   const opacity = useRef(new Animated.Value(0)).current;
-  const [eventId, setEventId] = useState('');
-  const user = dummyUser;
+  const {eventId} = route.params;
+  const user = useAppSelector(state => state.users.user);
 
-  async function getEventId() {
-    const eventId = await AsyncStorage.getItem('eventId');
-    const id = eventId != null ? JSON.parse(eventId) : null;
-    setEventId(id);
-  }
-  console.log(eventId);
   interface SubmitData {
     title: string;
     quantity: string;
@@ -46,64 +59,70 @@ export default function CreateTicketScreen({
   }
 
   async function handleDone() {
-    setExitLoading(true);
-    console.log('............close-----');
-    setTimeout(() => {
-      setExitLoading(false);
-    }, 3000);
-
     try {
-      setLoading(true);
+      setExitLoading(true);
       const response = await fetch(`${BaseUrl}/events/${eventId}`);
       const eventData: EventDataTypes = await response.json();
       if (response.status === 200) {
-        console.log(eventData);
-        await AsyncStorage.removeItem('eventId');
-        navigation.popToTop();
-        navigation.navigate('Detail', {...eventData});
-        setLoading(false);
+        setExitLoading(false);
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{name: 'Detail', params: eventData}],
+          }),
+        );
       }
-      setLoading(false);
       return true;
     } catch (e) {
-      setLoading(false);
+      setExitLoading(false);
       return e;
     }
   }
 
   const onSubmit = async (data: SubmitData) => {
-    const jsonValue = await AsyncStorage.getItem('naemeUser');
+    const jsonValue = await AsyncStorage.getItem('@tokens');
     const tokens: TokensType = jsonValue != null ? JSON.parse(jsonValue) : null;
-
+    const price = Number(data.price);
     const formData = new FormData();
-    formData.append('price', Number(data.price));
+    formData.append('price', price);
     formData.append('title', data.title);
     formData.append('quantity', Number(data.quantity));
     formData.append('event', eventId);
     formData.append('owner', user?.id);
+    formData.append('is_paid', price > 0 ? true : false);
 
-    const url = `${BaseUrl}/tickets/`;
-    const requestOptions = {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        Authorization: `Bearer ${tokens?.access}`,
-      },
-      body: formData,
-    };
-
+    setLoading(true);
     try {
-      setLoading(true);
-      const response = await fetch(url, requestOptions);
-      const data: TicketDataTypes = await response.json();
+      const response = await api.post(
+        '/tickets/',
+        {
+          price: price,
+          title: data.title,
+          quantity: data.quantity,
+          event: eventId,
+          paid: price > 0 ? true : false,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${tokens?.access}`,
+          },
+        },
+      );
+      const resData: TicketDataTypes = await response.data;
+
+      console.log(resData);
       if (response.status === 201) {
         setLoading(false);
         reset();
+        showAlert();
       }
-      console.log({data});
+      console.log(resData);
+      console.log(response.status);
       setLoading(false);
       return data;
     } catch (error) {
+      console.log(error);
       setLoading(false);
       return error;
     }
@@ -111,7 +130,6 @@ export default function CreateTicketScreen({
 
   useEffect(() => {
     fadeIn(opacity);
-    getEventId();
   }, []);
 
   const {
@@ -128,7 +146,7 @@ export default function CreateTicketScreen({
   });
   return (
     <ScrollView className="">
-      <View className="flex-1 pb-32 px-4 bg-white h-screen">
+      <View className="flex-1 pb-32 px-6 bg-white h-screen">
         <StatusBar animated={true} barStyle="dark-content" />
         <SafeAreaView className={Platform.OS === 'ios' ? 'mt-10' : 'mt-12'}>
           <View className="flex-row justify-between items-center">
@@ -138,14 +156,22 @@ export default function CreateTicketScreen({
               <AntDesign name="arrowleft" size={22} color="#181818" />
             </TouchableOpacity>
 
-            <Text font="Montserrat-Bold" className="text-xl">
+            <Text
+              style={{
+                fontFamily: 'Montserrat-Black',
+              }}
+              className="text-xl">
               Create Ticket
             </Text>
             <TouchableOpacity onPress={handleDone}>
               {exitLoading ? (
                 <ActivityIndicator size={'small'} />
               ) : (
-                <Text font="Montserrat-Bold" className="text-sm">
+                <Text
+                  style={{
+                    fontFamily: 'Montserrat-Bold',
+                  }}
+                  className="text-sm">
                   Done
                 </Text>
               )}
@@ -153,7 +179,19 @@ export default function CreateTicketScreen({
           </View>
         </SafeAreaView>
         <View className="mt-20">
-          <Text font="Montserrat-Bold" className="mb-2 text-sm">
+          <Text
+            style={{
+              fontFamily: 'Montserrat-Medium',
+            }}
+            className="text-sm p-3 bg-orange-200 mb-4 rounded-md">
+            Please Leave the ticket price blank for a free event, and create
+            only one ticket if you are hosting a free event
+          </Text>
+          <Text
+            style={{
+              fontFamily: 'Montserrat-Bold',
+            }}
+            className="mb-2 text-sm">
             Ticket Name
           </Text>
           <Animated.View
@@ -166,7 +204,10 @@ export default function CreateTicketScreen({
               }}
               render={({field: {onChange, onBlur, value}}) => (
                 <TextInput
-                  className=" text-gray-500 py-4"
+                  className=" text-gray-500"
+                  style={{
+                    fontFamily: 'Montserrat-Medium',
+                  }}
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
@@ -180,7 +221,11 @@ export default function CreateTicketScreen({
           {errors.title && (
             <Text className="text-rose-400 text-xs">This is required.</Text>
           )}
-          <Text font="Montserrat-Bold" className="my-1 mt-2 text-sm">
+          <Text
+            style={{
+              fontFamily: 'Montserrat-Bold',
+            }}
+            className="my-1 mt-2 text-sm">
             Price
           </Text>
           <Animated.View
@@ -189,17 +234,20 @@ export default function CreateTicketScreen({
             <Controller
               control={control}
               rules={{
-                required: true,
+                required: false,
               }}
               render={({field: {onChange, onBlur, value}}) => (
                 <TextInput
-                  className="text-gray-500 py-4"
+                  className="text-gray-500"
                   onBlur={onBlur}
+                  style={{
+                    fontFamily: 'Montserrat-Medium',
+                  }}
                   onChangeText={onChange}
                   value={value}
                   textContentType="telephoneNumber"
                   keyboardType="numeric"
-                  placeholder="Price of tickets"
+                  placeholder="Price for ticket"
                   placeholderTextColor={'#9d9c9d'}
                 />
               )}
@@ -209,7 +257,11 @@ export default function CreateTicketScreen({
           {errors.price && (
             <Text className="text-rose-400 text-xs">This is required.</Text>
           )}
-          <Text font="Montserrat-Bold" className="my-1 text-sm">
+          <Text
+            style={{
+              fontFamily: 'Montserrat-Bold',
+            }}
+            className="my-1 text-sm">
             Quantity
           </Text>
           <Animated.View
@@ -222,7 +274,7 @@ export default function CreateTicketScreen({
               }}
               render={({field: {onChange, onBlur, value}}) => (
                 <TextInput
-                  className="text-gray-500 py-5"
+                  className="text-gray-500"
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
@@ -245,8 +297,10 @@ export default function CreateTicketScreen({
               <ActivityIndicator size={'small'} className="p-3 px-20" />
             ) : (
               <Text
-                className="px-14 py-4 text-center text-rose-300"
-                font="Montserrat-Bold">
+                className="px-14 py-4 text-center text-white"
+                style={{
+                  fontFamily: 'Montserrat-Bold',
+                }}>
                 Create Ticket
               </Text>
             )}

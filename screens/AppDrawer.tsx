@@ -13,10 +13,8 @@ import {
   DrawerItemList,
 } from '@react-navigation/drawer';
 
-import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useNavigation} from '@react-navigation/native';
-import {dummyUser} from '../config';
 import {useAppDispatch, useAppSelector} from '../redux-toolkit/hook';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import AsyncStorage from '@react-native-async-storage/async-storage';

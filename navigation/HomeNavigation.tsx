@@ -9,7 +9,7 @@ import {dummyUser} from '../config';
 import HomeScreen from '../screens/HomeScreen';
 import TicketScreen from '../screens/TicketScreen';
 import ScannerScreen from '../screens/ScanScreen';
-import UserScreen from '../screens/UserScreen';
+// import UserScreen from '../screens/UserScreen';
 import CreateEventScreen from '../screens/CreateEventScreen';
 import AppDrawer from '../screens/AppDrawer';
 
@@ -35,7 +35,7 @@ export default function HomeDrawerNavigator() {
           width: 330,
           borderBottomRightRadius: 30,
           borderTopRightRadius: 30,
-          backgroundColor: '#F1F1F1',
+          backgroundColor: '#FFA26B',
         },
         drawerLabelStyle: {
           marginLeft: -25,
@@ -46,16 +46,16 @@ export default function HomeDrawerNavigator() {
         name="Home"
         options={() => ({
           drawerIcon: ({color, focused}) => (
-            <Feather
-              name="home"
+            <MaterialCommunityIcons
+              name="view-dashboard"
               size={28}
-              color={focused ? '#1CAE81' : '#cdcdcd'}
+              color={focused ? '#FFA26B' : '#cdcdcd'}
             />
           ),
           drawerLabel: ({focused}) => (
             <View
               style={{
-                backgroundColor: focused ? '#1CAE81' : '#eeeeee',
+                backgroundColor: focused ? '#FFA26B' : '#eeeeee',
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'space-between',
@@ -85,13 +85,13 @@ export default function HomeDrawerNavigator() {
             <Ionicons
               name="ios-create-outline"
               size={28}
-              color={focused ? '#1CAE81' : '#676A65'}
+              color={focused ? '#FFA26B' : '#676A65'}
             />
           ),
           drawerLabel: ({focused}) => (
             <View
               style={{
-                backgroundColor: focused ? '#1CAE81' : '#eeeeee',
+                backgroundColor: focused ? '#FFA26B' : '#eeeeee',
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'space-between',
@@ -121,13 +121,13 @@ export default function HomeDrawerNavigator() {
             <MaterialCommunityIcons
               name="ticket-outline"
               size={28}
-              color={focused ? '#1CAE81' : '#676A65'}
+              color={focused ? '#FFA26B' : '#676A65'}
             />
           ),
           drawerLabel: ({focused}) => (
             <View
               style={{
-                backgroundColor: focused ? '#1CAE81' : '#eeeeee',
+                backgroundColor: focused ? '#FFA26B' : '#eeeeee',
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'space-between',
@@ -156,13 +156,13 @@ export default function HomeDrawerNavigator() {
             <Ionicons
               name="scan"
               size={28}
-              color={focused ? '#1CAE81' : '#676A65'}
+              color={focused ? '#FFA26B' : '#676A65'}
             />
           ),
           drawerLabel: ({focused}) => (
             <View
               style={{
-                backgroundColor: focused ? '#1CAE81' : '#eeeeee',
+                backgroundColor: focused ? '#FFA26B' : '#eeeeee',
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'space-between',
@@ -184,20 +184,20 @@ export default function HomeDrawerNavigator() {
         })}
         component={ScannerScreen}
       />
-      <Drawer.Screen
+      {/* <Drawer.Screen
         name="User"
         options={() => ({
           drawerIcon: ({color, focused}) => (
             <MaterialCommunityIcons
               name="view-dashboard"
               size={28}
-              color={focused ? '#1CAE81' : '#676A65'}
+              color={focused ? '#FFA26B' : '#676A65'}
             />
           ),
           drawerLabel: ({focused}) => (
             <View
               style={{
-                backgroundColor: focused ? '#1CAE81' : '#eeeeee',
+                backgroundColor: focused ? '#FFA26B' : '#eeeeee',
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'space-between',
@@ -218,7 +218,7 @@ export default function HomeDrawerNavigator() {
           ),
         })}
         component={UserScreen}
-      />
+      /> */}
     </Drawer.Navigator>
   );
 }

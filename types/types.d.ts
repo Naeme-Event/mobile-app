@@ -18,7 +18,7 @@ export type AuthRootStackParamList = {
   SignIn: undefined;
 };
 
-export type RootTabParamList = {
+export type RootDrawerParamList = {
   Home: undefined;
   User: undefined;
   Ticket: undefined;
@@ -26,13 +26,15 @@ export type RootTabParamList = {
 };
 
 export type RootStackParamList = {
-  Main: NavigatorScreenParams<RootTabParamList> | undefined;
+  Main: NavigatorScreenParams<RootDrawerParamList> | undefined;
   Auth: NavigatorScreenParams<AuthRootStackParamList> | undefined;
   Detail: EventDataTypes;
   EditEventModal: EventDataTypes;
   PaymentModal: undefined;
   CreateEvent: undefined;
-  CreateTicket: undefined;
+  CreateTicket: {
+    eventId?: string;
+  };
   TicketCart: EventDataTypes;
   MyTicketDetail: PaidTicketDataTypes;
 };
@@ -48,19 +50,19 @@ export type RootStackScreenProps<T extends keyof RootStackParamList> = {
   route: RouteProp<RootStackParamList, T>;
 };
 
-export type TabScreenProps<T extends keyof RootTabParamList> = {
-  navigation: NativeStackNavigationProp<RootTabParamList, T>;
-  route: RouteProp<RootTabParamList, T>;
+export type TabScreenProps<T extends keyof RootDrawerParamList> = {
+  navigation: NativeStackNavigationProp<RootDrawerParamList, T>;
+  route: RouteProp<RootDrawerParamList, T>;
 };
 
-export type RootTabScreenProps<Screen extends keyof RootTabParamList> =
+export type RootTabScreenProps<Screen extends keyof RootDrawerParamList> =
   CompositeScreenProps<
-    BottomTabScreenProps<RootTabParamList, Screen>,
+    BottomTabScreenProps<RootDrawerParamList, Screen>,
     NativeStackScreenProps<RootStackParamList>
   >;
 
-export type RootDrawerScreenProps<Screen extends keyof RootTabParamList> =
+export type RootDrawerScreenProps<Screen extends keyof RootDrawerParamList> =
   CompositeScreenProps<
-    DrawerScreenProps<RootTabParamList, Screen>,
-    NativeStackScreenProps<RootTabParamList>
+    DrawerScreenProps<RootDrawerParamList, Screen>,
+    NativeStackScreenProps<RootDrawerParamList>
   >;

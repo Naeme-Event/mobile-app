@@ -34,11 +34,11 @@ function RootNavigator() {
         />
       )}
 
-      {/* <Stack.Screen
-        name="CreateEvent"
-        component={CreateEventScreen}
+      <Stack.Screen
+        name="CreateTicket"
+        component={CreateTicketScreen}
         options={{headerShown: false}}
-      /> */}
+      />
 
       <Stack.Screen
         name="MyTicketDetail"

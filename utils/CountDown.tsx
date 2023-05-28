@@ -30,33 +30,33 @@ export const Countdown = ({date, end_time}: Props) => {
     );
   } else {
     return (
-      <View className="flex-row items-center">
+      <View className="flex-row items-center mx-auto">
         <Text
           style={{
             fontFamily: 'Montserrat-Bold',
           }}
-          className="mr-1 text-xl text-[#1CAE81]">
+          className="mr-1 text-2xl text-[#1CAE81]">
           {timeBetween.days()}d{' '}
         </Text>
         <Text
           style={{
             fontFamily: 'Montserrat-Bold',
           }}
-          className="mr-1 text-xl text-[#1CAE81]">
+          className="mr-1 text-2xl text-[#1CAE81]">
           {timeBetween.hours()}h{' '}
         </Text>
         <Text
           style={{
             fontFamily: 'Montserrat-Bold',
           }}
-          className="mr-1 text-xl text-[#1CAE81]">
+          className="mr-1 text-2xl text-[#1CAE81]">
           {timeBetween.minutes()}min{' '}
         </Text>
         <Text
           style={{
             fontFamily: 'Montserrat-Bold',
           }}
-          className="mr-1 text-xl text-[#1CAE81]">
+          className="mr-1 text-2xl text-[#1CAE81]">
           {timeBetween.seconds()}s{' '}
         </Text>
       </View>

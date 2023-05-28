@@ -12,13 +12,13 @@ import {Countdown} from '../utils/CountDown';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import Entypo from 'react-native-vector-icons/Entypo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {TokensType} from '../hooks/useCachedResources';
-import Text from '../components/Text';
-import {BaseUrl, dummyUser} from '../config';
-import {formatCurrency, formatTime} from '../utils/formatter';
+import {} from '../config';
+import {formatCurrency, formatDate, formatTime} from '../utils/formatter';
 import api from '../api';
+import {useAppSelector} from '../redux-toolkit/hook';
+import {Text} from 'react-native-paper';
 
 export default function MyTicketDetailScreen({
   navigation,
@@ -27,39 +27,45 @@ export default function MyTicketDetailScreen({
   const data = route?.params;
   const [loading, setLoading] = useState(false);
   const [isVerified, setIsVerified] = useState(data.used);
-  const user = dummyUser;
+  const user = useAppSelector(state => state.users.user);
 
   const verifyTicket = async () => {
-    const jsonValue = await AsyncStorage.getItem('naemeUser');
-    const tokens: TokensType = jsonValue != null ? JSON.parse(jsonValue) : null;
+    try {
+      const jsonValue = await AsyncStorage.getItem('@tokens');
+      const tokens: TokensType =
+        jsonValue != null ? JSON.parse(jsonValue) : null;
 
-    const formData = new FormData();
-    formData.append('used', true);
-    setLoading(true);
-    if (tokens.access && data?.id) {
-      if (user?.id === data.ticket_admin) {
-        api
-          .patch(
-            '/my-tickets/${data?.id}/',
-            {used: true},
-            {
-              headers: {
-                Accept: 'application/json',
-                Authorization: `Bearer ${tokens?.access}`,
+      const formData = new FormData();
+      formData.append('used', true);
+      setLoading(true);
+      if (tokens.access && data?.id) {
+        if (user?.id === data.ticket_admin) {
+          api
+            .patch(
+              `/my-tickets/${data?.id}/`,
+              {used: true},
+              {
+                headers: {
+                  Accept: 'application/json',
+                  Authorization: `Bearer ${tokens?.access}`,
+                },
               },
-            },
-          )
-          .then(response => {
-            if (response.status === 200) {
-              setIsVerified(response.data.used);
+            )
+            .then(response => {
+              if (response.status === 200) {
+                setIsVerified(response.data.used);
+                setLoading(false);
+              }
+            })
+            .catch(e => {
+              console.log(e);
               setLoading(false);
-            }
-          })
-          .catch(e => {
-            console.log(e);
-            setLoading(false);
-          });
+            });
+        }
       }
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
     }
   };
 
@@ -69,21 +75,27 @@ export default function MyTicketDetailScreen({
       <TouchableOpacity
         onPress={() => navigation.goBack()}
         className={` ${
-          Platform.OS === 'ios' ? 'top-20' : 'top-20'
-        } bg-[#ffffff] z-30 absolute rounded-full left-5 items-center p-2`}>
+          Platform.OS === 'ios' ? 'top-10' : 'top-10'
+        } bg-[#dddddd] z-30 absolute rounded-full left-5 items-center p-2`}>
         <AntDesign name="arrowleft" size={20} color="#181818" />
       </TouchableOpacity>
       <ScrollView className="mx-4 bg-white rounded-3xl w-full px-[7%]">
-        <View className="h-full w-full py-7 mt-[50%] px-4">
-          <Text font="Montserrat-Bold" className="text-gray-800 text-3xl">
+        <View className="h-full w-full py-7 mt-[20%] px-4">
+          <Text
+            style={{
+              fontFamily: 'Montserrat-Black',
+            }}
+            className="text-gray-800 text-3xl">
             {data.event_name}
           </Text>
           <View className="flex-row ml-2 mt-3 items-center">
-            <View className="flex-row items-center rounded-lg px-3 gap-1 pb-1 bg-[#f23f55]">
-              <FontAwesome name="ticket" size={17} color="#e8e1e2" />
+            <View className="flex-row items-center rounded-lg px-3 gap-1 pb-1 bg-[#1CAE81]">
+              <FontAwesome name="ticket" size={17} color="#ffffff" />
               <Text
-                font="montserrat-semibold"
-                className="text-[#e8e1e2] text-sm">
+                style={{
+                  fontFamily: 'Montserrat-BlackItalic',
+                }}
+                className="text-[#ffffff] text-sm">
                 {route.params.title}
               </Text>
             </View>
@@ -108,24 +120,32 @@ export default function MyTicketDetailScreen({
               <View className="gap-5">
                 <View>
                   <Text
-                    font="Montserrat-Bold"
-                    className="text-rose-500 text-xs">
+                    style={{
+                      fontFamily: 'Montserrat-Bold',
+                    }}
+                    className="text-[#1CAE81] text-xs">
                     Date
                   </Text>
                   <Text
-                    font="Montserrat-Bold"
+                    style={{
+                      fontFamily: 'Montserrat-Bold',
+                    }}
                     className="text-[#000000] text-lg">
-                    {data.date}
+                    {formatDate(data.start_date)}
                   </Text>
                 </View>
                 <View>
                   <Text
-                    font="Montserrat-Bold"
-                    className="text-rose-500 text-xs">
+                    style={{
+                      fontFamily: 'Montserrat-Bold',
+                    }}
+                    className="text-[#1CAE81] text-xs">
                     Time
                   </Text>
                   <Text
-                    font="Montserrat-Bold"
+                    style={{
+                      fontFamily: 'Montserrat-Bold',
+                    }}
                     className="text-[#000000] text-lg">
                     {formatTime(data.start_time)}
                   </Text>
@@ -134,24 +154,32 @@ export default function MyTicketDetailScreen({
               <View className="gap-5">
                 <View>
                   <Text
-                    font="Montserrat-Bold"
-                    className="text-rose-500 text-xs">
+                    style={{
+                      fontFamily: 'Montserrat-Bold',
+                    }}
+                    className="text-[#1CAE81] text-xs">
                     Quantity
                   </Text>
                   <Text
-                    font="Montserrat-Bold"
+                    style={{
+                      fontFamily: 'Montserrat-Bold',
+                    }}
                     className="text-[#000000] text-lg">
                     {data.quantity}
                   </Text>
                 </View>
                 <View>
                   <Text
-                    font="Montserrat-Bold"
-                    className="text-rose-500 text-xs">
+                    style={{
+                      fontFamily: 'Montserrat-Bold',
+                    }}
+                    className="text-[#1CAE81] text-xs">
                     Price Each
                   </Text>
                   <Text
-                    font="Montserrat-Bold"
+                    style={{
+                      fontFamily: 'Montserrat-Bold',
+                    }}
                     className="text-[#000000] text-lg">
                     $ {formatCurrency(data.price * data.quantity)}
                   </Text>
@@ -160,18 +188,17 @@ export default function MyTicketDetailScreen({
             </View>
             <View className="border-b border-gray-200 my-4" />
             <View className="flex-row items-center justify-between">
-              <View className="mr-3">
-                <Entypo name="time-slot" size={24} color="#282828" />
-              </View>
-              <Countdown date={data.date} end_time={data.end_time} />
+              <Countdown date={data.end_date} end_time={data.end_time} />
             </View>
           </View>
           {user?.id === data.ticket_admin && (
             <TouchableOpacity
               onPress={verifyTicket}
-              className="bg-rose-500 mx-2 mt-2 rounded-xl">
+              className="bg-[#000000] mx-2 mt-2 rounded-xl">
               <Text
-                font="Montserrat-Bold"
+                style={{
+                  fontFamily: 'Montserrat-Bold',
+                }}
                 className="text-center text-white py-4">
                 {isVerified
                   ? 'Verified'

@@ -9,6 +9,7 @@ import {EventDataTypes} from '../types/typings';
 // @ts-ignore
 import {formatCurrency} from '../utils/formatter';
 import {Text} from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 export type useNavigationProps = NativeStackNavigationProp<
   RootStackParamList,
@@ -19,6 +20,7 @@ export default function EventCard(props: EventDataTypes) {
   const navigation = useNavigation<useNavigationProps>();
   const month = moment(props.start_date).format('MMM');
   const day = moment(props.start_date).format('DD');
+  const date = moment(props.start_date).format('MMMM D, YYYY');
 
   return (
     <TouchableOpacity
@@ -47,7 +49,7 @@ export default function EventCard(props: EventDataTypes) {
               <Text className="">0 SOLD</Text>
             </View>
           ) : (
-            <View className="right-3 bottom-3 absolute bg-[#1CAE81] px-1 rounded-full">
+            <View className="right-3 bottom-3 absolute bg-[#FFA26B] px-1 rounded-full">
               <Text className="">{props.total_sold_tickets} SOLD</Text>
             </View>
           )}
@@ -60,7 +62,18 @@ export default function EventCard(props: EventDataTypes) {
               {props.title}
             </Text>
           </View>
-
+          <View className="flex-row items-center mt-1 gap-x-2">
+            <View className="items-center mr-3 justify-center rounded-full">
+              <Ionicons name="md-calendar" size={20} color="#FFA26B" />
+            </View>
+            <Text
+              className="text-gray-600 leading-5"
+              style={{
+                fontFamily: 'Montserrat-Medium',
+              }}>
+              {date}
+            </Text>
+          </View>
           <View className="w-full mt-1">
             {props.lowest_price ? (
               <Text
@@ -69,7 +82,11 @@ export default function EventCard(props: EventDataTypes) {
                 $ {formatCurrency(props.lowest_price)}
               </Text>
             ) : (
-              <Text className="bottom-3 absolute rounded-full">$0.00</Text>
+              <Text
+                style={{fontFamily: 'Montserrat-Bold'}}
+                className="bottom-3 absolute rounded-full -mb-2">
+                Free
+              </Text>
             )}
 
             <TouchableOpacity

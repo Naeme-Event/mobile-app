@@ -3,10 +3,11 @@ import {useState} from 'react';
 import {Image, TouchableOpacity, View} from 'react-native';
 import {RootStackParamList} from '../types/types';
 import {PaidTicketDataTypes} from '../types/typings';
-import Text from './Text';
-import {formatCurrency, formatTime} from '../utils/formatter';
+import {formatCurrency, formatDate, formatTime} from '../utils/formatter';
 // @ts-ignore
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {Countdown} from '../utils/CountDown';
+import {Text} from 'react-native-paper';
 
 export type NavigationPrp = NavigationProp<RootStackParamList, 'Detail'>;
 
@@ -14,22 +15,26 @@ export default function TicketCard({item}: {item: PaidTicketDataTypes}) {
   const navigation = useNavigation<NavigationPrp>();
   const [isVerified, setIsVerified] = useState(item.used);
 
-  console.log({isVerified});
-
   return (
     <TouchableOpacity
       activeOpacity={0.9}
       onPress={() => navigation.navigate('MyTicketDetail', {...item})}>
       <View className="bg-white mb-7 w-[315px] mx-4 rounded-3xl">
         <View className="w-full py-7 px-4">
-          <Text font="Montserrat-Bold" className="text-gray-800 text-2xl">
+          <Text
+            style={{
+              fontFamily: 'Montserrat-Bold',
+            }}
+            className="text-gray-800 text-2xl">
             {item.event_name}
           </Text>
           <View className="flex-row ml-2 mt-3 items-center">
-            <View className="flex-row items-center shadow-xl rounded-lg shadow-gray-400 px-3 gap-1 pb-1 bg-[#f23f55]">
+            <View className="flex-row items-center shadow-xl rounded-lg shadow-gray-400 px-3 gap-1 pb-1 bg-[#1CAE81]">
               {/* <FontAwesome name="ticket" size={14} color="#e8e1e2" /> */}
               <Text
-                font="montserrat-semibold"
+                style={{
+                  fontFamily: 'Montserrat-SemiBold',
+                }}
                 className="text-[#e8e1e2] text-xs">
                 {item.title}
               </Text>
@@ -43,9 +48,9 @@ export default function TicketCard({item}: {item: PaidTicketDataTypes}) {
               resizeMode="cover"
               className="h-full w-full"
             />
-            {item.used === true && (
+            {item.used && (
               <View className="w-full h-full absolute items-center justify-center">
-                {/* <MaterialIcons name="verified" size={150} color="#009154" /> */}
+                <MaterialIcons name="verified" size={150} color="#009154" />
               </View>
             )}
           </View>
@@ -54,24 +59,32 @@ export default function TicketCard({item}: {item: PaidTicketDataTypes}) {
               <View className="gap-5">
                 <View>
                   <Text
-                    font="Montserrat-Bold"
-                    className="text-rose-500 text-xs">
+                    style={{
+                      fontFamily: 'Montserrat-Bold',
+                    }}
+                    className="text-[#1CAE81] text-xs">
                     Date
                   </Text>
                   <Text
-                    font="Montserrat-Bold"
+                    style={{
+                      fontFamily: 'Montserrat-Bold',
+                    }}
                     className="text-[#000000] text-sm">
-                    {item.date}
+                    {formatDate(item.start_date)}
                   </Text>
                 </View>
                 <View>
                   <Text
-                    font="Montserrat-Bold"
-                    className="text-rose-500 text-xs">
+                    style={{
+                      fontFamily: 'Montserrat-Bold',
+                    }}
+                    className="text-[#1CAE81] text-xs">
                     Time
                   </Text>
                   <Text
-                    font="Montserrat-Bold"
+                    style={{
+                      fontFamily: 'Montserrat-Bold',
+                    }}
                     className="text-[#000000] text-sm">
                     {formatTime(item.start_time)}
                   </Text>
@@ -80,24 +93,32 @@ export default function TicketCard({item}: {item: PaidTicketDataTypes}) {
               <View className="gap-5">
                 <View>
                   <Text
-                    font="Montserrat-Bold"
-                    className="text-rose-500 text-xs">
+                    style={{
+                      fontFamily: 'Montserrat-Bold',
+                    }}
+                    className="text-[#1CAE81] text-xs">
                     Quantity
                   </Text>
                   <Text
-                    font="Montserrat-Bold"
+                    style={{
+                      fontFamily: 'Montserrat-Bold',
+                    }}
                     className="text-[#000000] text-sm">
                     {item.quantity}
                   </Text>
                 </View>
                 <View>
                   <Text
-                    font="Montserrat-Bold"
-                    className="text-rose-500 text-xs">
+                    style={{
+                      fontFamily: 'Montserrat-Bold',
+                    }}
+                    className="text-[#1CAE81] text-xs">
                     Price Each
                   </Text>
                   <Text
-                    font="Montserrat-Bold"
+                    style={{
+                      fontFamily: 'Montserrat-Bold',
+                    }}
                     className="text-[#000000] text-sm">
                     $ {formatCurrency(item.price * item.quantity)}
                   </Text>
@@ -106,8 +127,7 @@ export default function TicketCard({item}: {item: PaidTicketDataTypes}) {
             </View>
             <View className="border-b border-gray-200 my-2" />
             <View className="flex-row items-center justify-between">
-              {/* <Entypo name="time-slot" size={24} color="#282828" />
-              <Countdown date={item.date} end_time={item.end_time} /> */}
+              <Countdown date={item.end_date} end_time={item.end_time} />
             </View>
           </View>
         </View>

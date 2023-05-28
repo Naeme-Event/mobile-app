@@ -19,7 +19,11 @@ export default function DetailScreen({
   const user = dummyUser;
   const data = route.params;
   return (
-    <View className="flex-1">
+    <View
+      className="flex-1"
+      style={{
+        backgroundColor: 'rgba(0, 0, 0, 0)',
+      }}>
       <View className="w-full absolute bottom-0 py-4 mb-2 items-center z-10">
         <TouchableOpacity
           onPress={() => navigation.navigate('TicketCart', {...data})}
@@ -28,12 +32,15 @@ export default function DetailScreen({
             style={{
               fontFamily: 'Montserrat-Bold',
             }}
-            className="text-[#1CAE81] text-lg mr-1">
+            className="text-[#ffffff] text-lg mr-1">
             Book Now
           </Text>
         </TouchableOpacity>
       </View>
       <Animated.ScrollView
+        style={{
+          backgroundColor: 'rgba(0, 0, 0, 0)',
+        }}
         scrollEventThrottle={16}
         onScroll={Animated.event(
           [{nativeEvent: {contentOffset: {y: scrollA}}}],
@@ -45,13 +52,13 @@ export default function DetailScreen({
           <Image
             source={{uri: data.image}}
             resizeMode="cover"
-            className="h-[300px]"
+            className="h-[330px]"
           />
         </View>
 
         <Details {...data} />
         <TouchableOpacity
-          onPress={() => navigation.goBack()}
+          onPress={() => navigation.navigate('Main', {screen: 'Home'})}
           className={` ${
             Platform.OS === 'ios' ? 'top-5' : 'top-12'
           } bg-[#f7f7f7] shadow-sm shadow-gray-500 z-30 absolute rounded-full left-5 items-center p-2`}>

@@ -20,9 +20,9 @@ import {
 import CartImage from '../assets/images/CART.png';
 import Checkout from '../components/Pay';
 import {useCartContext} from '../providers/CartProvider';
-import Text from '../components/Text';
 import {BaseUrl} from '../config';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import {Text} from 'react-native-paper';
 
 const Cart = Image.resolveAssetSource(CartImage).uri;
 
@@ -31,8 +31,11 @@ export default function TicketCartScreen({
   route,
 }: RootStackScreenProps<'TicketCart'>) {
   const data = route.params;
-  const [loading, setLoading] = useState(true);
-  const [tickets, setTickets] = useState<TicketDataTypes[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [tickets, setTickets] = useState<TicketDataTypes[]>(
+    route.params.tickets,
+  );
+  console.log('first:', route.params.tickets);
 
   const {
     getItemQuantity,
@@ -46,28 +49,28 @@ export default function TicketCartScreen({
     orderSummaryToggle,
   } = useCartContext();
 
-  const getTickets = async () => {
-    try {
-      const response = await fetch(
-        `${BaseUrl}/tickets/?event=${route.params.id}`,
-      );
-      const ticketData: TicketResponseType = await response.json();
-      if (response.status === 200) {
-        if (ticketData.results) {
-          setTickets(ticketData.results);
-        }
-      }
-      setLoading(false);
-      return true;
-    } catch (e) {
-      setLoading(false);
-      return e;
-    }
-  };
+  // const getTickets = async () => {
+  //   try {
+  //     const response = await fetch(
+  //       `${BaseUrl}/tickets/?event=${route.params.id}`,
+  //     );
+  //     const ticketData: TicketResponseType = await response.json();
+  //     if (response.status === 200) {
+  //       if (ticketData.results) {
+  //         setTickets(ticketData.results);
+  //       }
+  //     }
+  //     setLoading(false);
+  //     return true;
+  //   } catch (e) {
+  //     setLoading(false);
+  //     return e;
+  //   }
+  // };
 
-  useLayoutEffect(() => {
-    getTickets();
-  }, []);
+  // useLayoutEffect(() => {
+  //   getTickets();
+  // }, []);
 
   return (
     <View className="flex-1">
@@ -104,15 +107,17 @@ export default function TicketCartScreen({
         </View>
 
         <View className="mb-4">
-          <Text font="Montserrat-Bold" className="text-center mt-2 text-xl">
+          <Text
+            style={{fontFamily: 'Montserrat-Black'}}
+            className="text-center mt-2 text-xl">
             {data.title}
           </Text>
           <View className="mx-auto flex-row mt-3 items-center ">
             <AntDesign name="calendar" size={17} color="#181818" />
             <Text
-              font="Montserrat-Bold"
+              style={{fontFamily: 'Montserrat-SemiBold'}}
               className="text-center text-sm text-gray-700 ml-2">
-              {formatDate(data.date)}
+              {formatDate(data.start_date)}
             </Text>
           </View>
         </View>
@@ -130,19 +135,21 @@ export default function TicketCartScreen({
                     <View className="flex-1 flex-start">
                       <View className="flex-row ">
                         <Text
-                          font="montserrat-semibold"
-                          className="text-rose-500 text-md px-2 py-1 rounded-lg border-[1px] border-rose-300">
+                          style={{fontFamily: 'Montserrat-SemiBold'}}
+                          className="text-[#000] text-lg px-2 py-1 rounded-lg">
                           $ {formatCurrency(price)}
                         </Text>
                       </View>
                     </View>
                     <View className="flex-1">
-                      <Text font="Montserrat-Bold" className="text-lg">
+                      <Text
+                        style={{fontFamily: 'Montserrat-SemiBold'}}
+                        className="text-sm">
                         {title}
                       </Text>
                       <Text
-                        font="montserrat-medium"
-                        className="text-xs text-gray-400">
+                        style={{fontFamily: 'Montserrat-Medium'}}
+                        className="text-xs text-[#FFA26B]">
                         {data.total_sold_tickets === null
                           ? 0
                           : data.total_sold_tickets}
@@ -151,16 +158,16 @@ export default function TicketCartScreen({
                     </View>
 
                     <View className="flex-1 items-end">
-                      <View className="flex-row  h-[45px] items-center border-[1px] px-2 py-1 rounded-lg border-gray-300">
+                      <View className="flex-row  h-[45px] items-center border-gray-300">
                         <AntDesign
                           name="minuscircleo"
                           size={24}
-                          color="#C4C4C4"
+                          color="#FFA26B"
                           className="my-2"
                           onPress={() => decreaseCartQuantity(id)}
                         />
                         <Text
-                          font="montserrat-semibold"
+                          style={{fontFamily: 'Montserrat-SemiBold'}}
                           className="text-md mx-4 text-[#474042]">
                           {quantity}
                         </Text>
@@ -171,7 +178,7 @@ export default function TicketCartScreen({
                             increaseCartQuantity(id, price, title, event, data)
                           }
                           size={24}
-                          color="#C4C4C4"
+                          color="#1CAE81"
                         />
                       </View>
                     </View>
@@ -193,7 +200,9 @@ export default function TicketCartScreen({
               </View>
             </View>
           </TouchableOpacity>
-          <Text font="Montserrat-Bold" className="text-white text-lg">
+          <Text
+            style={{fontFamily: 'Montserrat-SemiBold'}}
+            className="text-white text-lg">
             $ {formatCurrency(cartTotal)}
           </Text>
           <View className="">
@@ -210,7 +219,7 @@ export default function TicketCartScreen({
           <View className="flex-row px-3">
             <View className="flex-1"></View>
             <Text
-              font="Montserrat-Bold"
+              style={{fontFamily: 'Montserrat-SemiBold'}}
               className="text-xl text-rose-400 text-center">
               Order Summary
             </Text>
@@ -229,17 +238,17 @@ export default function TicketCartScreen({
                   key={item.id}
                   className="flex-row items-center my-2 justify-between">
                   <Text
-                    font="montserrat-semibold"
+                    style={{fontFamily: 'Montserrat-SemiBold'}}
                     className="text-white text-sm">
                     {quantity} x {item.title}
                   </Text>
                   <Text
-                    font="montserrat-semibold"
+                    style={{fontFamily: 'Montserrat-SemiBold'}}
                     className="text-white text-sm">
                     {item.eventTitle}
                   </Text>
                   <Text
-                    font="montserrat-semibold"
+                    style={{fontFamily: 'Montserrat-SemiBold'}}
                     className="text-white text-sm">
                     $ {formatCurrency(item.price)}
                   </Text>
@@ -248,11 +257,13 @@ export default function TicketCartScreen({
             })}
 
             <View className="mt-7 flex-row items-baseline">
-              <Text font="montserrat-semibold" className="text-white text-lg">
+              <Text
+                style={{fontFamily: 'Montserrat-Bold'}}
+                className="text-white text-lg">
                 Total:
               </Text>
               <Text
-                font="montserrat-semibold"
+                style={{fontFamily: 'Montserrat-Black'}}
                 className="ml-3 text-white text-lg">
                 $ {formatCurrency(cartTotal)}
               </Text>

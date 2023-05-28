@@ -11,13 +11,13 @@ import React, {ReactNode, useCallback, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {useEventContext} from '../hooks/useEvent';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
-import {RootTabParamList} from '../types/types';
+import {RootDrawerParamList} from '../types/types';
 import {BaseUrl, dummyUser} from '../config';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Feather from 'react-native-vector-icons/Feather';
 import api from '../api';
 
-type NavProps = NavigationProp<RootTabParamList, 'Home'>;
+type NavProps = NavigationProp<RootDrawerParamList, 'Home'>;
 
 export default function Search() {
   const {

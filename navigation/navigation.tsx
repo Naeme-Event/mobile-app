@@ -20,7 +20,7 @@ export default function Navigation() {
     GoogleSignin.configure({
       scopes: ['profile'], // Add any additional scopes you require
       webClientId:
-        '919602408222-pj590en2tl3supl5km6jba6k31oegpgv.apps.googleusercontent.com', // Replace with your web client ID
+        '919602408222-63uj948lf5qtj1vos519rfdr5v1osnc8.apps.googleusercontent.com',
       offlineAccess: false,
     });
   }, []);
@@ -30,7 +30,6 @@ export default function Navigation() {
       const jsonValue = await AsyncStorage.getItem('@tokens');
       const tokens: TokensType =
         jsonValue != null ? JSON.parse(jsonValue) : null;
-      console.log('hooks', {tokens});
       try {
         const apiRes = await api.get('/account/user', {
           headers: {
