@@ -15,9 +15,12 @@ import Logo from '../assets/naeme.png';
 
 const BGColor = '#000';
 
-export default function SplashScreen() {
+export default function AppSplashScreen() {
   // SafeArea Value...
   const edges = useSafeAreaInsets();
+  // useEffect(() => {
+  //   // Hide the splash screen after a delay
+  // }, []);
 
   // Animation Values....
   const startAnimation = useRef(new Animated.Value(0)).current;

@@ -181,7 +181,7 @@ export default function MyTicketDetailScreen({
                       fontFamily: 'Montserrat-Bold',
                     }}
                     className="text-[#000000] text-lg">
-                    $ {formatCurrency(data.price * data.quantity)}
+                    {formatCurrency(data.price * data.quantity)}
                   </Text>
                 </View>
               </View>

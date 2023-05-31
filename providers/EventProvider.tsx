@@ -10,6 +10,8 @@ import React, {
 } from 'react';
 interface EventCartContextType {
   loading: boolean;
+  loadingMore: boolean;
+  setLoadingMore: React.Dispatch<React.SetStateAction<boolean>>;
   setLoading(value: boolean): void;
   setNextPage: React.Dispatch<React.SetStateAction<string | null>>;
   nextPage: string | null;
@@ -46,6 +48,7 @@ import api from '../api';
 export default function EventProvider({children}: {children: ReactNode}) {
   const [featuredEvent, setFeaturedEvent] = useState<EventDataTypes[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [loadingMore, setLoadingMore] = useState<boolean>(false);
   const [nextPage, setNextPage] = useState<string | null>(null);
   const [eventData, setEventData] = useState<EventDataTypes[]>();
   const [refresh, setRefresh] = useState(true);
@@ -59,15 +62,15 @@ export default function EventProvider({children}: {children: ReactNode}) {
   });
 
   const loadMoreItem = () => {
-    setLoading(true);
+    setLoadingMore(true);
     if (searching === false) {
-      if (nextPage !== null) {
+      if (!!nextPage) {
         loadMore();
       } else {
-        setLoading(false);
+        setLoadingMore(false);
       }
     } else {
-      setLoading(false);
+      setLoadingMore(false);
     }
   };
 
@@ -81,10 +84,10 @@ export default function EventProvider({children}: {children: ReactNode}) {
         }
         setPreviousPage(data.previous);
         setNextPage(data?.next);
-        setLoading(false);
+        setLoadingMore(false);
       }
     } catch (e) {
-      setLoading(false);
+      setLoadingMore(false);
       console.log('LoadMore Error: ', e);
     }
   };
@@ -93,10 +96,9 @@ export default function EventProvider({children}: {children: ReactNode}) {
 
   const fetchData = useCallback(
     async (url: any) => {
+      setLoading(true);
       try {
-        console.log('-------called from fetchData');
-        setLoading(true);
-        // setSearching(false);
+        setSearching(false);
         const response = await api.get(url);
         const data: ResponseType = await response.data;
         if (data.next !== null) {
@@ -132,7 +134,6 @@ export default function EventProvider({children}: {children: ReactNode}) {
   };
 
   const handleRefresh = async () => {
-    console.log('handle---------called');
     setLoading(true);
     setSearching(false);
     fetchData(Url);
@@ -165,6 +166,8 @@ export default function EventProvider({children}: {children: ReactNode}) {
         setLike,
         setFeaturedEvent,
         featuredEvent,
+        loadingMore,
+        setLoadingMore,
       }}>
       {children}
     </EventContext.Provider>

@@ -1,10 +1,9 @@
 import {
   FlatList,
-  Platform,
   RefreshControl,
-  Image,
   View,
   StatusBar,
+  ScrollView,
 } from 'react-native';
 import NotFound from '../components/Empty';
 import EventCard from '../components/EventCard';
@@ -12,15 +11,22 @@ import FeaturedEvent from '../components/FeaturedEvent';
 import HomeHeader from '../components/HomeHeader';
 import Header from '../components/Header';
 import {Loader} from '../components/Loader';
-import Search from '../components/Search';
 import {RootDrawerScreenProps, TabScreenProps} from '../types/types';
 import {useEventContext} from '../hooks/useEvent';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import {Skeleton} from '@rneui/themed';
 
 const HomeScreen = ({navigation, route}: RootDrawerScreenProps<'Home'>) => {
-  const {eventData, loading, loadMoreItem, refresh, handleRefresh, searching} =
-    useEventContext();
+  const {
+    eventData,
+    loadingMore,
+    loadMoreItem,
+    refresh,
+    handleRefresh,
+    searching,
+  } = useEventContext();
+
+  const {loading} = useEventContext();
+  console.log({loading});
 
   return (
     <View className="bg-gray-100">
@@ -28,9 +34,36 @@ const HomeScreen = ({navigation, route}: RootDrawerScreenProps<'Home'>) => {
       <FlatList
         contentContainerStyle={{paddingBottom: 200}}
         data={eventData}
-        renderItem={({item}) => {
-          return <EventCard {...item} />;
-        }}
+        renderItem={({item}) => (
+          <>
+            {loading ? (
+              <ScrollView
+                showsHorizontalScrollIndicator={false}
+                style={{paddingVertical: 20}}
+                className="gap-6 p-6">
+                {[1, 2, 3].map((i, index) => (
+                  <View key={index}>
+                    <Skeleton
+                      animation="pulse"
+                      height={200}
+                      style={{
+                        backgroundColor: '#ddd',
+                        borderRadius: 14,
+                        width: '100%',
+                      }}
+                      skeletonStyle={{
+                        backgroundColor: '#eee',
+                        borderRadius: 14,
+                      }}
+                    />
+                  </View>
+                ))}
+              </ScrollView>
+            ) : (
+              <EventCard {...item} />
+            )}
+          </>
+        )}
         keyExtractor={item => item.id}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={() => (
@@ -39,7 +72,7 @@ const HomeScreen = ({navigation, route}: RootDrawerScreenProps<'Home'>) => {
             {!searching && <FeaturedEvent />}
           </View>
         )}
-        ListFooterComponent={<Loader isLoading={loading} />}
+        ListFooterComponent={<Loader isLoading={loadingMore} />}
         ListEmptyComponent={() => (
           <View>
             {!loading && eventData?.length === 0 && <NotFound title="event" />}

@@ -79,7 +79,7 @@ export default function EventCard(props: EventDataTypes) {
               <Text
                 style={{fontFamily: 'Montserrat-Bold'}}
                 className="text-gray-500">
-                $ {formatCurrency(props.lowest_price)}
+                {formatCurrency(props.lowest_price)}
               </Text>
             ) : (
               <Text

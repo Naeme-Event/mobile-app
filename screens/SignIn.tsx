@@ -24,7 +24,6 @@ export default function SignIn({}) {
       setLoading(true);
       await GoogleSignin.hasPlayServices();
       const {idToken} = await GoogleSignin.signIn();
-
       if (idToken) {
         await GoogleSignin.clearCachedAccessToken(idToken);
         await api

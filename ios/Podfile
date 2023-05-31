@@ -21,6 +21,9 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
+permissions_path = '../node_modules/react-native-permissions/ios'
+pod 'Permission-Camera', :path => "#{permissions_path}/Camera"
+
 target 'NaemeMobileApp' do
   config = use_native_modules!
 

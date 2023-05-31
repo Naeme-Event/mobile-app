@@ -8,7 +8,6 @@ import {
 import React, {useEffect, useRef, useState} from 'react';
 import moment from 'moment';
 import {useNavigation} from '@react-navigation/native';
-import MapView, {Marker} from 'react-native-maps';
 import {useNavigationProps} from './EventCard';
 import {EventDataTypes} from '../types/typings';
 import {formatCurrency} from '../utils/formatter';
@@ -97,7 +96,7 @@ export default function Details(props: EventDataTypes) {
                 fontFamily: 'Montserrat-Bold',
               }}
               className="text-lg  text-gray-500">
-              $ {formatCurrency(props.lowest_price)}
+              {formatCurrency(props.lowest_price)}
             </Text>
           </View>
         ) : (
@@ -107,7 +106,7 @@ export default function Details(props: EventDataTypes) {
                 fontFamily: 'Montserrat-Bold',
               }}
               className="text-sm  text-gray-500">
-              $ {formatCurrency(props.lowest_price)} - ${' '}
+              {formatCurrency(props.lowest_price)} -{' '}
               {formatCurrency(props.highest_price)}
             </Text>
           </View>

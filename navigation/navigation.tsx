@@ -1,6 +1,5 @@
-import useCachedResources from '../hooks/useCachedResources';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
-import SplashScreen from '../screens/SplashScreen';
+import AppSplashScreen from '../screens/SplashScreen';
 import RootNavigator from './RootNavigation';
 import {NavigationContainer} from '@react-navigation/native';
 import {useAppDispatch} from '../redux-toolkit/hook';
@@ -12,7 +11,6 @@ import {TokensType, UserType} from '../types/typings';
 import api from '../api';
 
 export default function Navigation() {
-  const isLoadingComplete = useCachedResources();
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(true);
 
@@ -20,12 +18,9 @@ export default function Navigation() {
     GoogleSignin.configure({
       scopes: ['profile'], // Add any additional scopes you require
       webClientId:
-        '919602408222-63uj948lf5qtj1vos519rfdr5v1osnc8.apps.googleusercontent.com',
+        '919602408222-pj590en2tl3supl5km6jba6k31oegpgv.apps.googleusercontent.com',
       offlineAccess: false,
     });
-  }, []);
-
-  useEffect(() => {
     (async () => {
       const jsonValue = await AsyncStorage.getItem('@tokens');
       const tokens: TokensType =
@@ -58,17 +53,10 @@ export default function Navigation() {
     })();
   }, []);
 
-  if (!isLoadingComplete) {
-    return (
-      <SafeAreaProvider>
-        <SplashScreen />
-      </SafeAreaProvider>
-    );
-  }
   if (loading) {
     return (
       <SafeAreaProvider>
-        <SplashScreen />
+        <AppSplashScreen />
       </SafeAreaProvider>
     );
   }

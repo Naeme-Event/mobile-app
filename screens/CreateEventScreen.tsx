@@ -29,9 +29,10 @@ import {BaseUrl, dummyUser} from '../config';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Dropdown} from 'react-native-element-dropdown';
-import {Text} from 'react-native-paper';
+import {Checkbox, Text} from 'react-native-paper';
 import api from '../api';
 import {useAppSelector} from '../redux-toolkit/hook';
+import {Input} from 'react-native-elements';
 
 const data = [
   {label: 'Item 1', value: '1'},
@@ -76,6 +77,7 @@ export default function CreateEventScreen({
   const opacity = useRef(new Animated.Value(0)).current;
   const imageOpacity = useRef(new Animated.Value(0)).current;
   const [loading, setLoading] = useState(false);
+  const [agreeToTerms, setAgreeToTerms] = useState(false);
   const user = useAppSelector(state => state.users.user);
 
   // states ended
@@ -162,15 +164,7 @@ export default function CreateEventScreen({
     control,
     handleSubmit,
     reset,
-    formState: {
-      errors,
-      dirtyFields,
-      isDirty,
-      isSubmitted,
-      isValidating,
-      isValid,
-      isSubmitting,
-    },
+    formState: {errors, isSubmitted},
   } = useForm({
     defaultValues: {
       title: '',
@@ -311,8 +305,13 @@ export default function CreateEventScreen({
     console.log({e});
   }
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
-      <Pressable
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      className="bg-white"
+      contentContainerStyle={{
+        paddingBottom: 50,
+      }}>
+      <View
         // onPress={() => {
         //   setShowEndTime(false);
         //   setShowStartTime(false);
@@ -410,158 +409,167 @@ export default function CreateEventScreen({
           )}
 
           {/* location */}
-          <Text
-            style={{
-              fontFamily: 'Montserrat-Bold',
-            }}
-            className="my-1 mt-2 text-sm">
-            Venue
-          </Text>
-          <Animated.View
-            style={[{opacity}]}
-            className="bg-gray-100 rounded-lg my-2 px-3">
-            <Controller
-              control={control}
-              rules={{
-                required: true,
-              }}
-              render={({field: {onChange, onBlur, value}}) => (
-                <TextInput
-                  className="text-gray-500 text-xs"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  style={{
-                    fontFamily: 'Montserrat-Regular',
+          <View className="flex-row gap-4 mt-2">
+            <View className="flex-1 ">
+              <Text
+                style={{
+                  fontFamily: 'Montserrat-Bold',
+                }}
+                className="my-1 mt-2 text-sm">
+                Venue
+              </Text>
+              <Animated.View
+                style={[{opacity}]}
+                className="bg-gray-100 rounded-lg my-2 px-3">
+                <Controller
+                  control={control}
+                  rules={{
+                    required: true,
                   }}
-                  value={value}
-                  textContentType="location"
-                  placeholder="Your event location"
-                  placeholderTextColor={'#9d9c9d'}
+                  render={({field: {onChange, onBlur, value}}) => (
+                    <TextInput
+                      className="text-gray-500 text-xs"
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      style={{
+                        fontFamily: 'Montserrat-Regular',
+                      }}
+                      value={value}
+                      textContentType="location"
+                      placeholder="Your event location"
+                      placeholderTextColor={'#9d9c9d'}
+                    />
+                  )}
+                  name="venue"
                 />
+              </Animated.View>
+              {errors.venue && (
+                <Text className="text-rose-400 text-xs">This is required.</Text>
               )}
-              name="venue"
-            />
-          </Animated.View>
-          {errors.venue && (
-            <Text className="text-rose-400 text-xs">This is required.</Text>
-          )}
+            </View>
 
-          {/* country */}
-
-          <Text
-            style={{
-              fontFamily: 'Montserrat-Bold',
-            }}
-            className="my-1 mt-2 text-sm">
-            Country
-          </Text>
-          <Animated.View
-            style={[{opacity}]}
-            className="bg-gray-100 rounded-lg my-2 px-3">
-            <Controller
-              control={control}
-              rules={{
-                required: true,
-              }}
-              render={({field: {onChange, onBlur, value}}) => (
-                <TextInput
-                  className="text-gray-500 text-xs"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  textContentType="location"
-                  style={{
-                    fontFamily: 'Montserrat-Regular',
+            {/* country */}
+            <View className="flex-1">
+              <Text
+                style={{
+                  fontFamily: 'Montserrat-Bold',
+                }}
+                className="my-1 mt-2 text-sm">
+                Country
+              </Text>
+              <Animated.View
+                style={[{opacity}]}
+                className="bg-gray-100 rounded-lg my-2 px-3">
+                <Controller
+                  control={control}
+                  rules={{
+                    required: true,
                   }}
-                  autoComplete="postal-address-country"
-                  placeholder="Country"
-                  placeholderTextColor={'#9d9c9d'}
+                  render={({field: {onChange, onBlur, value}}) => (
+                    <TextInput
+                      className="text-gray-500 text-xs"
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      value={value}
+                      textContentType="location"
+                      style={{
+                        fontFamily: 'Montserrat-Regular',
+                      }}
+                      autoComplete="postal-address-country"
+                      placeholder="Country"
+                      placeholderTextColor={'#9d9c9d'}
+                    />
+                  )}
+                  name="country"
                 />
+              </Animated.View>
+              {errors.country && (
+                <Text className="text-rose-400 text-xs">This is required.</Text>
               )}
-              name="country"
-            />
-          </Animated.View>
-          {errors.country && (
-            <Text className="text-rose-400 text-xs">This is required.</Text>
-          )}
+            </View>
+          </View>
 
-          {/* state */}
-          <Text
-            style={{
-              fontFamily: 'Montserrat-Bold',
-            }}
-            className="my-1 mt-2 text-sm">
-            State
-          </Text>
-          <Animated.View
-            style={[{opacity}]}
-            className="bg-gray-100 rounded-lg my-2 px-3">
-            <Controller
-              control={control}
-              rules={{
-                required: true,
-              }}
-              render={({field: {onChange, onBlur, value}}) => (
-                <TextInput
-                  className="text-gray-500 text-xs"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  textContentType="location"
-                  style={{
-                    fontFamily: 'Montserrat-Regular',
+          {/* state //  <View ></View> */}
+          <View className="flex-row gap-4 mt-2">
+            <View className="flex-1">
+              <Text
+                style={{
+                  fontFamily: 'Montserrat-Bold',
+                }}
+                className="my-1 mt-2 text-sm">
+                State
+              </Text>
+              <Animated.View
+                style={[{opacity}]}
+                className="bg-gray-100 rounded-lg my-2 px-3">
+                <Controller
+                  control={control}
+                  rules={{
+                    required: true,
                   }}
-                  autoComplete="postal-address-country"
-                  placeholder="State"
-                  placeholderTextColor={'#9d9c9d'}
+                  render={({field: {onChange, onBlur, value}}) => (
+                    <TextInput
+                      className="text-gray-500 text-xs"
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      value={value}
+                      textContentType="location"
+                      style={{
+                        fontFamily: 'Montserrat-Regular',
+                      }}
+                      autoComplete="postal-address-country"
+                      placeholder="State"
+                      placeholderTextColor={'#9d9c9d'}
+                    />
+                  )}
+                  name="state"
                 />
+              </Animated.View>
+              {errors.state && (
+                <Text className="text-rose-400 text-xs">This is required.</Text>
               )}
-              name="state"
-            />
-          </Animated.View>
-          {errors.state && (
-            <Text className="text-rose-400 text-xs">This is required.</Text>
-          )}
+            </View>
 
-          {/* city */}
-
-          <Text
-            style={{
-              fontFamily: 'Montserrat-Bold',
-            }}
-            className="my-1 mt-2 text-sm">
-            City
-          </Text>
-          <Animated.View
-            style={[{opacity}]}
-            className="bg-gray-100 rounded-lg my-2 px-3">
-            <Controller
-              control={control}
-              rules={{
-                required: true,
-              }}
-              render={({field: {onChange, onBlur, value}}) => (
-                <TextInput
-                  className="text-gray-500 text-xs"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  textContentType="location"
-                  autoComplete="postal-address-country"
-                  placeholder="City"
-                  style={{
-                    fontFamily: 'Montserrat-Regular',
+            {/* city */}
+            <View className="flex-1">
+              <Text
+                style={{
+                  fontFamily: 'Montserrat-Bold',
+                }}
+                className="my-1 mt-2 text-sm">
+                City
+              </Text>
+              <Animated.View
+                style={[{opacity}]}
+                className="bg-gray-100 rounded-lg my-2 px-3">
+                <Controller
+                  control={control}
+                  rules={{
+                    required: true,
                   }}
-                  placeholderTextColor={'#9d9c9d'}
+                  render={({field: {onChange, onBlur, value}}) => (
+                    <TextInput
+                      className="text-gray-500 text-xs"
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      value={value}
+                      textContentType="location"
+                      autoComplete="postal-address-country"
+                      placeholder="City"
+                      style={{
+                        fontFamily: 'Montserrat-Regular',
+                      }}
+                      placeholderTextColor={'#9d9c9d'}
+                    />
+                  )}
+                  name="city"
                 />
+              </Animated.View>
+              {errors.city && (
+                <Text className="text-rose-400 text-xs">This is required.</Text>
               )}
-              name="city"
-            />
-          </Animated.View>
-          {errors.city && (
-            <Text className="text-rose-400 text-xs">This is required.</Text>
-          )}
-
+            </View>
+          </View>
           {/* description  */}
 
           <Text
@@ -834,7 +842,7 @@ export default function CreateEventScreen({
             {!image && (
               <TouchableOpacity
                 onPress={pickImage}
-                className="items-center justify-center">
+                className="items-center justify-center bg-gray-200 py-10 rounded-2xl">
                 <Ionicons name="image" size={54} />
                 <Text
                   style={{
@@ -854,15 +862,31 @@ export default function CreateEventScreen({
                 )}
               </TouchableOpacity>
             )}
-            <View className="flex-row mt-12 items-center justify-center">
+            <View className="flex-row mt-4 max-w-screen-[200px]">
+              <Checkbox
+                status={agreeToTerms ? 'checked' : 'unchecked'}
+                onPress={() => setAgreeToTerms(!agreeToTerms)}
+              />
+              <View className="ml-3">
+                <Text className="text-xs">By clicking checked you </Text>
+                <Text
+                  className="text-xs text-[#FFA26B]"
+                  onPress={() => navigation.navigate('Terms')}>
+                  AGREE to our Terms and Conditions
+                </Text>
+              </View>
+            </View>
+
+            <View className="flex-row my-12 items-center justify-center">
               <TouchableOpacity
-                // onPress={() => navigation.navigate('CreateTicket')}
                 onPress={handleSubmit(onSubmit, errorChecker)}
-                className={
-                  image === null
-                    ? 'bg-[#c7c6c6] rounded-xl'
-                    : 'bg-[#000] rounded-xl'
-                }>
+                className={` bg-gray-500
+                  ${
+                    !agreeToTerms
+                      ? 'bg-[#c7c6c6] rounded-xl'
+                      : 'bg-[#000] rounded-xl'
+                  }
+                `}>
                 {loading ? (
                   <ActivityIndicator size={'small'} className="py-2 px-20" />
                 ) : (
@@ -882,7 +906,7 @@ export default function CreateEventScreen({
             </View>
           </Animated.View>
         </View>
-      </Pressable>
+      </View>
     </ScrollView>
   );
 }

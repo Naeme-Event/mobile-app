@@ -182,6 +182,7 @@ export default function HomeDrawerNavigator() {
             </View>
           ),
         })}
+        // @ts-ignore
         component={ScannerScreen}
       />
       {/* <Drawer.Screen

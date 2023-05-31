@@ -1,6 +1,7 @@
-import { View, Text } from 'react-native';
-import React, { createContext, ReactNode, useContext, useState } from 'react';
-import { CartContextTypes, CartItems, EventDataTypes } from '../types/typings';
+import {View, Text} from 'react-native';
+import React, {createContext, ReactNode, useContext, useState} from 'react';
+import {CartContextTypes, CartItems, EventDataTypes} from '../types/typings';
+import api from '../api';
 
 const CartContext = createContext({} as CartContextTypes);
 
@@ -8,14 +9,14 @@ export function useCartContext() {
   return useContext(CartContext);
 }
 
-export default function CartProvider({ children }: { children: ReactNode }) {
+export default function CartProvider({children}: {children: ReactNode}) {
   const [cartItems, setCartItems] = useState<CartItems[]>([]);
   const [loading, setLoading] = useState(false);
   const [orderSummaryToggle, setOrderSummaryToggle] = useState(false);
 
   const cartQuantity = cartItems.reduce(
     (quantity, item) => item.quantity + quantity,
-    0
+    0,
   );
 
   const cartTotal = cartItems.reduce((acc, item) => {
@@ -25,8 +26,8 @@ export default function CartProvider({ children }: { children: ReactNode }) {
   const toggleOrderSummary = () => setOrderSummaryToggle(!orderSummaryToggle);
 
   const getItemQuantity = (id: string) => {
-    const qty = cartItems.find((item) => item.id === id)?.quantity || 0;
-    console.log(qty);
+    const qty = cartItems.find(item => item.id === id)?.quantity || 0;
+    // console.log(qty);
     return qty;
   };
 
@@ -35,12 +36,12 @@ export default function CartProvider({ children }: { children: ReactNode }) {
     price: number,
     title: string,
     eventId: string,
-    eventItem: EventDataTypes
+    eventItem: EventDataTypes,
   ) {
     const AvailableTicket =
       eventItem?.total_ticket_count - eventItem?.total_sold_tickets;
-    setCartItems((currItems) => {
-      if (!currItems.find((item) => item.id === id)) {
+    setCartItems(currItems => {
+      if (!currItems.find(item => item.id === id)) {
         return [
           ...currItems,
           {
@@ -53,9 +54,9 @@ export default function CartProvider({ children }: { children: ReactNode }) {
           },
         ];
       } else {
-        return currItems.map((item) => {
+        return currItems.map(item => {
           if (item.id === id && cartQuantity < AvailableTicket) {
-            return { ...item, quantity: item.quantity + 1 };
+            return {...item, quantity: item.quantity + 1};
           } else {
             return item;
           }
@@ -65,13 +66,13 @@ export default function CartProvider({ children }: { children: ReactNode }) {
   }
 
   function decreaseCartQuantity(id: string) {
-    setCartItems((currItems) => {
-      if (currItems.find((item) => item.id === id)?.quantity === 1) {
-        return currItems.filter((item) => item.id !== id);
+    setCartItems(currItems => {
+      if (currItems.find(item => item.id === id)?.quantity === 1) {
+        return currItems.filter(item => item.id !== id);
       } else {
-        return currItems.map((item) => {
+        return currItems.map(item => {
           if (item.id === id) {
-            return { ...item, quantity: item.quantity - 1 };
+            return {...item, quantity: item.quantity - 1};
           } else {
             return item;
           }
@@ -95,8 +96,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
         setLoading,
         setOrderSummaryToggle,
         toggleOrderSummary,
-      }}
-    >
+      }}>
       {children}
     </CartContext.Provider>
   );

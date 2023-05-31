@@ -1,104 +1,91 @@
-import {useEffect, useState} from 'react';
-import {
-  Button,
-  SafeAreaView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {
-  RootStackParamList,
-  RootStackScreenProp,
-  RootTabScreenProps,
-  TabScreenProps,
-} from '../types/types';
+import * as React from 'react';
 
-import {NavigationProp, useNavigation} from '@react-navigation/native';
-import {BaseUrl} from '../config';
-import api from '../api';
-import {Text} from 'react-native-paper';
-import {PaidTicketDataTypes} from '../types/typings';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {useCameraDevices} from 'react-native-vision-camera';
+import {Camera} from 'react-native-vision-camera';
+import {useScanBarcodes, BarcodeFormat} from 'vision-camera-code-scanner';
+import Header from '../components/Header';
+import {useNavigation} from '@react-navigation/native';
+import {RootDrawerScreenProps, RootStackScreenProps} from '../types/types';
 
-type NavProp = NavigationProp<RootStackParamList, 'MyTicketDetail'>;
+export default function App({
+  navigation,
+  route,
+}: RootDrawerScreenProps<'Scan'>) {
+  const [hasPermission, setHasPermission] = React.useState(false);
+  const [isActive, setIsActive] = React.useState(false);
+  const devices = useCameraDevices();
+  const device = devices.front;
 
-export default function ScannerScreen({route}: TabScreenProps<'Scan'>) {
-  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-  const [useScan, setUseScan] = useState(false);
-  const [scanned, setScanned] = useState(false);
+  const [frameProcessor, barcodes] = useScanBarcodes([BarcodeFormat.QR_CODE], {
+    checkInverted: true,
+  });
 
-  const navigation = useNavigation<NavProp>();
-
-  if (route.name !== 'Scan') {
-    setScanned(false);
-  }
-
-  // useEffect(() => {
-  //   const getBarCodeScannerPermissions = async () => {
-  //     const {status} = await BarCodeScanner.requestPermissionsAsync();
-  //     setHasPermission(status === 'granted');
-  //   };
-
-  //   getBarCodeScannerPermissions();
+  // Alternatively you can use the underlying function:
+  //
+  // const frameProcessor = useFrameProcessor((frame) => {
+  //   'worklet';
+  //   const detectedBarcodes = scanBarcodes(frame, [BarcodeFormat.QR_CODE], { checkInverted: true });
+  //   runOnJS(setBarcodes)(detectedBarcodes);
   // }, []);
 
-  const handleBarCodeScanned = async ({
-    type,
-    data,
-  }: {
-    type: any;
-    data: string;
-  }) => {
-    setScanned(true);
-    const response = await api.get('/my-tickets/${data}');
-    const responseData: PaidTicketDataTypes = await response.data;
-    console.log(responseData);
-    if (data) {
-      navigation.navigate('MyTicketDetail', {...responseData});
-      setScanned(false);
-      setUseScan(false);
-    }
-  };
-
-  if (hasPermission === null) {
-    return <Text>Requesting for camera permission</Text>;
-  }
-
-  if (hasPermission === false) {
-    return <Text>No access to camera</Text>;
-  }
+  React.useEffect(() => {
+    (async () => {
+      const status = await Camera.requestCameraPermission();
+      setHasPermission(status === 'authorized');
+    })();
+  }, []);
 
   return (
-    <SafeAreaView className="flex-1 bg-[#090808]">
-      <View className="mt-20">
+    device != null &&
+    hasPermission && (
+      <View className="flex-1 px-5 bg-gray-100 items-center">
         <Text
+          className="mt-[30%] text-lg text-center text-black"
           style={{
-            fontFamily: 'Montserrat-Bold',
-          }}
-          className="text-xl text-rose-400 text-center">
-          Ticket QRCODE Scanner
+            fontFamily: 'Montserrat-Black',
+          }}>
+          Scan and validate tickets for your events
         </Text>
-        <Text className="text-sm text-gray-200 text-center">
-          Scan and verify your tickets
-        </Text>
-      </View>
-      <View className=" h-[50%] my-auto items-center justify-center">
-        {/* {useScan && (
-          <BarCodeScanner
-            onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-            className="h-[100%] w-full"
-            className={StyleSheet.absoluteFillObject}
+        <View className="w-[270px] h-[250px] mt-[30%] border-emerald-500 border-[5px] rounded-xl">
+          <Camera
+            style={StyleSheet.absoluteFill}
+            device={device}
+            isActive={isActive}
+            frameProcessor={frameProcessor}
+            frameProcessorFps={5}
           />
-        )} */}
-        {!useScan && (
-          <TouchableOpacity
-            onPress={() => setUseScan(true)}
-            className="bg-rose-400 rounded-xl">
-            <Text className="text-lg px-5 py-2 text-gray-200 text-center">
-              Scan a ticket
-            </Text>
-          </TouchableOpacity>
-        )}
+        </View>
+
+        <TouchableOpacity
+          onPress={() => setIsActive(!isActive)}
+          className="bg-black px-10 py-3 mt-7 rounded-lg">
+          <Text
+            style={{
+              fontFamily: 'Montserrat-Black',
+            }}
+            className="text-white">
+            {isActive ? 'Stop Scan' : ' Click to Scan'}
+          </Text>
+        </TouchableOpacity>
+
+        {barcodes?.map((barcode, idx) => (
+          <Text key={idx} style={styles.barcodeTextURL}>
+            {barcode.displayValue}
+          </Text>
+        ))}
+        {/* 
+// @ts-ignore */}
+        <Header navigation={navigation} route={route} />
       </View>
-    </SafeAreaView>
+    )
   );
 }
+
+const styles = StyleSheet.create({
+  barcodeTextURL: {
+    fontSize: 20,
+    color: 'white',
+    fontWeight: 'bold',
+  },
+});

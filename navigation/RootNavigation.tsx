@@ -11,6 +11,7 @@ import HomeDrawerNavigator from './HomeNavigation';
 import {useSelector, useDispatch} from 'react-redux';
 import {useAppSelector} from '../redux-toolkit/hook';
 import React from 'react';
+import Terms from '../screens/Terms';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -46,6 +47,11 @@ function RootNavigator() {
         options={{headerShown: false}}
       />
 
+      <Stack.Screen
+        name="Terms"
+        component={Terms}
+        options={{headerShown: false, presentation: 'fullScreenModal'}}
+      />
       <Stack.Group screenOptions={{presentation: 'modal'}}>
         <Stack.Screen
           name="Detail"

@@ -120,7 +120,7 @@ export default function TicketCard({item}: {item: PaidTicketDataTypes}) {
                       fontFamily: 'Montserrat-Bold',
                     }}
                     className="text-[#000000] text-sm">
-                    $ {formatCurrency(item.price * item.quantity)}
+                    {formatCurrency(item.price * item.quantity)}
                   </Text>
                 </View>
               </View>

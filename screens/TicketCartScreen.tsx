@@ -22,7 +22,9 @@ import Checkout from '../components/Pay';
 import {useCartContext} from '../providers/CartProvider';
 import {BaseUrl} from '../config';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import {Text} from 'react-native-paper';
+import {Button, Checkbox, Text} from 'react-native-paper';
+import api from '../api';
+import {useAppSelector} from '../redux-toolkit/hook';
 
 const Cart = Image.resolveAssetSource(CartImage).uri;
 
@@ -32,10 +34,9 @@ export default function TicketCartScreen({
 }: RootStackScreenProps<'TicketCart'>) {
   const data = route.params;
   const [loading, setLoading] = useState(false);
-  const [tickets, setTickets] = useState<TicketDataTypes[]>(
-    route.params.tickets,
-  );
-  console.log('first:', route.params.tickets);
+  const [agreeToTerms, setAgreeToTerms] = useState(true);
+
+  const user = useAppSelector(state => state.users.user);
 
   const {
     getItemQuantity,
@@ -49,28 +50,52 @@ export default function TicketCartScreen({
     orderSummaryToggle,
   } = useCartContext();
 
-  // const getTickets = async () => {
-  //   try {
-  //     const response = await fetch(
-  //       `${BaseUrl}/tickets/?event=${route.params.id}`,
-  //     );
-  //     const ticketData: TicketResponseType = await response.json();
-  //     if (response.status === 200) {
-  //       if (ticketData.results) {
-  //         setTickets(ticketData.results);
-  //       }
-  //     }
-  //     setLoading(false);
-  //     return true;
-  //   } catch (e) {
-  //     setLoading(false);
-  //     return e;
-  //   }
-  // };
+  function getZeroPriceTicketId(arr: TicketDataTypes[]) {
+    const zeroPriceTicket = arr.find(ticket => ticket.price === 0);
+    if (zeroPriceTicket?.id) {
+      const ticketId = zeroPriceTicket?.id;
+      const eventId = zeroPriceTicket?.event;
+      return {ticketId, eventId};
+    }
+  }
 
-  // useLayoutEffect(() => {
-  //   getTickets();
-  // }, []);
+  const hasFreeEvent:
+    | {
+        eventId: string;
+        ticketId: string;
+      }
+    | undefined = getZeroPriceTicketId(data.tickets);
+
+  async function getFreeTicket() {
+    setLoading(true);
+    try {
+      const response = await api.post(
+        '/my-tickets/',
+        {
+          event: hasFreeEvent?.eventId,
+          ticket: hasFreeEvent?.ticketId,
+          user: user?.id,
+          quantity: 1,
+        },
+        {
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+      const data = await response.data;
+      if (response.status === 201) {
+        // router.push(`/ticket/${data.id}`);
+        setLoading(false);
+      } else {
+        // console.log("ticket not created");
+        setLoading(false);
+      }
+    } catch (error) {
+      setLoading(false);
+    }
+  }
 
   return (
     <View className="flex-1">
@@ -127,7 +152,7 @@ export default function TicketCartScreen({
           <ActivityIndicator size={'large'} className="mt-16" />
         ) : (
           <View className="mt-10 px-5">
-            {tickets.map(({event, id, price, title}) => {
+            {data.tickets.map(({event, id, price, title}) => {
               const quantity = getItemQuantity(id);
               return (
                 <View key={id}>
@@ -137,7 +162,7 @@ export default function TicketCartScreen({
                         <Text
                           style={{fontFamily: 'Montserrat-SemiBold'}}
                           className="text-[#000] text-lg px-2 py-1 rounded-lg">
-                          $ {formatCurrency(price)}
+                          {formatCurrency(price)}
                         </Text>
                       </View>
                     </View>
@@ -189,13 +214,28 @@ export default function TicketCartScreen({
             })}
           </View>
         )}
+
+        <View className="flex-row mt-4 max-w-screen-[200px] px-5">
+          <Checkbox
+            status={agreeToTerms ? 'checked' : 'unchecked'}
+            onPress={() => setAgreeToTerms(!agreeToTerms)}
+          />
+          <View className="ml-3">
+            <Text className="text-xs">By clicking checked you </Text>
+            <Text
+              className="text-xs text-[#FFA26B]"
+              onPress={() => navigation.navigate('Terms')}>
+              AGREE to our Terms and Conditions
+            </Text>
+          </View>
+        </View>
       </ScrollView>
       <View className="absolute z-40 bottom-0 px-5 right-0 rounded-t-3xl flex-row left-0 bg-[#0f0f0f] h-[11%]">
         <View className="flex-1 flex-row justify-between items-center">
           <TouchableOpacity onPress={toggleOrderSummary}>
             <View className="relative w-20">
               <Image className="h-7 w-7" source={{uri: Cart}} />
-              <View className="absolute -mt-4 ml-7 bg-rose-500 px-2 py-1 rounded-full">
+              <View className="absolute -mt-4 ml-7 bg-[#FFA26B] px-2 py-1 rounded-full">
                 <Text className="text-white ">{cartQuantity}</Text>
               </View>
             </View>
@@ -203,14 +243,10 @@ export default function TicketCartScreen({
           <Text
             style={{fontFamily: 'Montserrat-SemiBold'}}
             className="text-white text-lg">
-            $ {formatCurrency(cartTotal)}
+            {formatCurrency(cartTotal)}
           </Text>
-          <View className="">
-            {cartQuantity > 0 && (
-              <TouchableOpacity className="bg-rose-500 rounded-lg px-6 py-2">
-                <Checkout />
-              </TouchableOpacity>
-            )}
+          <View>
+            <Checkout agreeToTerms={agreeToTerms} />
           </View>
         </View>
       </View>
@@ -250,7 +286,7 @@ export default function TicketCartScreen({
                   <Text
                     style={{fontFamily: 'Montserrat-SemiBold'}}
                     className="text-white text-sm">
-                    $ {formatCurrency(item.price)}
+                    {formatCurrency(item.price)}
                   </Text>
                 </View>
               );
@@ -265,7 +301,7 @@ export default function TicketCartScreen({
               <Text
                 style={{fontFamily: 'Montserrat-Black'}}
                 className="ml-3 text-white text-lg">
-                $ {formatCurrency(cartTotal)}
+                {formatCurrency(cartTotal)}
               </Text>
             </View>
           </View>

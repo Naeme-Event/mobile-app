@@ -22,7 +22,16 @@ export function formatDate(date: Date | string) {
 }
 
 export const formatCurrency = (amount: number) => {
-  return Number(amount)
-    .toFixed(2)
-    .replace(/\d(?=(\d{3})+\.)/g, '$&,');
+  const formatter = new Intl.NumberFormat('en-NG', {
+    style: 'currency',
+    currency: 'NGN',
+  });
+
+  return formatter.format(amount);
 };
+
+// export const formatCurrency = (amount: number) => {
+//   return Number(amount)
+//     .toFixed(2)
+//     .replace(/\d(?=(\d{3})+\.)/g, '$&,');
+// };
