@@ -222,11 +222,11 @@ export default function TicketCartScreen({
           />
           <View className="ml-3">
             <Text className="text-xs">By clicking checked you </Text>
-            <Text
-              className="text-xs text-[#FFA26B]"
-              onPress={() => navigation.navigate('Terms')}>
-              AGREE to our Terms and Conditions
-            </Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Terms')}>
+              <Text className="text-xs text-[#FFA26B]">
+                AGREE to our Terms and Conditions
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>

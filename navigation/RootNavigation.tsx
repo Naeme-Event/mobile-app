@@ -40,18 +40,17 @@ function RootNavigator() {
         component={CreateTicketScreen}
         options={{headerShown: false}}
       />
-
+      <Stack.Screen
+        name="Terms"
+        component={Terms}
+        options={{headerShown: false}}
+      />
       <Stack.Screen
         name="MyTicketDetail"
         component={MyTicketDetailScreen}
         options={{headerShown: false}}
       />
 
-      <Stack.Screen
-        name="Terms"
-        component={Terms}
-        options={{headerShown: false, presentation: 'fullScreenModal'}}
-      />
       <Stack.Group screenOptions={{presentation: 'modal'}}>
         <Stack.Screen
           name="Detail"
