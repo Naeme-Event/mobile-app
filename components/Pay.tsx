@@ -19,7 +19,12 @@ import {useAppSelector} from '../redux-toolkit/hook';
 import {v4 as uuidv4} from 'uuid';
 import emailjs from 'emailjs-com';
 
-export default function Checkout({agreeToTerms}: {agreeToTerms: boolean}) {
+type Props = {
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  agreeToTerms: boolean;
+};
+
+export default function Checkout({agreeToTerms, setLoading}: Props) {
   const {cartItems, cartTotal, setCartItems} = useCartContext();
   const user = useAppSelector(state => state.users.user);
   const paystackWebViewRef = useRef<paystackProps.PayStackRef>();
@@ -78,23 +83,25 @@ export default function Checkout({agreeToTerms}: {agreeToTerms: boolean}) {
               }),
             );
             if (resData?.length) {
+              setLoading(true);
+
               if (user?.email) {
-                emailjs
-                  .send(
-                    EMAILJS_SERVICE_ID,
-                    EMAILJS_TEMP_ID,
-                    {
-                      email_to: user?.email,
-                      message: `https://www.naeme.app/dashboard`,
-                    },
-                    EMAILJS_PUBLIC_KEY,
-                  )
-                  .then(response => {
-                    console.log('Email sent successfully:', response);
-                  })
-                  .catch(error => {
-                    console.error('Error sending email:', error);
-                  });
+                // emailjs
+                //   .send(
+                //     EMAILJS_SERVICE_ID,
+                //     EMAILJS_TEMP_ID,
+                //     {
+                //       email_to: user?.email,
+                //       message: `https://www.naeme.app/dashboard`,
+                //     },
+                //     EMAILJS_PUBLIC_KEY,
+                //   )
+                //   .then(response => {
+                //     console.log('Email sent successfully:', response);
+                //   })
+                //   .catch(error => {
+                //     console.error('Error sending email:', error);
+                //   });
                 // @ts-ignore
                 navigation.navigate('Main', {screen: 'Ticket'});
               }

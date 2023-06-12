@@ -17,7 +17,7 @@ import api from '../api';
 import {Text} from 'react-native-paper';
 import TicketCard from '../components/TicketCard';
 import {useAppSelector} from '../redux-toolkit/hook';
-import Header from '../components/Header';
+import {Header, HeaderTitle} from '../components/Header';
 
 export default function TicketScreen({
   navigation,
@@ -66,16 +66,9 @@ export default function TicketScreen({
           Platform.OS === 'android' ? 'mt-[5%]' : 'mt-[10%]'
         }`}>
         <View className="flex-row mb-10 justify-between mt-[20%]">
-          <Text
-            style={{
-              fontFamily: 'Montserrat-Bold',
-            }}
-            className="text-gray-900  text-xl">
-            My Tickets
-          </Text>
           <TouchableOpacity
             onPress={() => Linking.openURL('https://www.naeme.app/dashboard')}
-            className="">
+            className="p-2 bg-gray-200 rounded-lg">
             <Text
               style={{
                 fontFamily: 'Montserrat-Bold',
@@ -119,7 +112,9 @@ export default function TicketScreen({
           }
         />
       </View>
-      <Header navigation={navigation} route={route} />
+      {/* 
+      // @ts-ignore */}
+      <HeaderTitle navigation={navigation} route={route} title="My Tickets" />
     </SafeAreaView>
   );
 }

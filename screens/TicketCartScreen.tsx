@@ -22,7 +22,7 @@ import Checkout from '../components/Pay';
 import {useCartContext} from '../providers/CartProvider';
 import {BaseUrl} from '../config';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import {Button, Checkbox, Text} from 'react-native-paper';
+import {Checkbox, Text} from 'react-native-paper';
 import api from '../api';
 import {useAppSelector} from '../redux-toolkit/hook';
 
@@ -34,7 +34,7 @@ export default function TicketCartScreen({
 }: RootStackScreenProps<'TicketCart'>) {
   const data = route.params;
   const [loading, setLoading] = useState(false);
-  const [agreeToTerms, setAgreeToTerms] = useState(true);
+  const [agreeToTerms, setAgreeToTerms] = useState(false);
 
   const user = useAppSelector(state => state.users.user);
 
@@ -246,7 +246,7 @@ export default function TicketCartScreen({
             {formatCurrency(cartTotal)}
           </Text>
           <View>
-            <Checkout agreeToTerms={agreeToTerms} />
+            <Checkout agreeToTerms={agreeToTerms} setLoading={setLoading} />
           </View>
         </View>
       </View>

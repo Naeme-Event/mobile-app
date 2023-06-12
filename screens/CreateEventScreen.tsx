@@ -33,6 +33,7 @@ import {Checkbox, Text} from 'react-native-paper';
 import api from '../api';
 import {useAppSelector} from '../redux-toolkit/hook';
 import {Input} from 'react-native-elements';
+import {HeaderTitle} from '../components/Header';
 
 const data = [
   {label: 'Item 1', value: '1'},
@@ -311,6 +312,9 @@ export default function CreateEventScreen({
       contentContainerStyle={{
         paddingBottom: 50,
       }}>
+      {/* 
+      // @ts-ignore */}
+      <HeaderTitle navigation={navigation} route={route} title="Create Event" />
       <View
         // onPress={() => {
         //   setShowEndTime(false);
@@ -320,31 +324,14 @@ export default function CreateEventScreen({
         // }}
         className="flex-1 pb-32 px-6 bg-white">
         <StatusBar animated={true} barStyle="dark-content" />
-        <SafeAreaView className={Platform.OS === 'ios' ? 'mt-10' : 'mt-7'}>
-          <View className="flex-row justify-between items-center">
-            <TouchableOpacity
-              className="p-2 bg-white rounded-3xl"
-              onPress={() => navigation.goBack()}>
-              <AntDesign name="arrowleft" size={22} color="#181818" />
-            </TouchableOpacity>
 
-            <Text
-              style={{
-                fontFamily: 'Montserrat-Bold',
-              }}
-              className="text-xl text-[#1CAE81]">
-              Create Event
-            </Text>
-            <View />
-          </View>
-        </SafeAreaView>
         <View className="mt-7">
           {/* title */}
           <Text
             style={{
               fontFamily: 'Montserrat-Bold',
             }}
-            className="mb-2 text-sm">
+            className="mb-2 text-sm mt-14">
             Title
           </Text>
           <Animated.View

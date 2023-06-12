@@ -9,7 +9,7 @@ import NotFound from '../components/Empty';
 import EventCard from '../components/EventCard';
 import FeaturedEvent from '../components/FeaturedEvent';
 import HomeHeader from '../components/HomeHeader';
-import Header from '../components/Header';
+import {Header} from '../components/Header';
 import {Loader} from '../components/Loader';
 import {RootDrawerScreenProps, TabScreenProps} from '../types/types';
 import {useEventContext} from '../hooks/useEvent';
@@ -35,7 +35,7 @@ const HomeScreen = ({navigation, route}: RootDrawerScreenProps<'Home'>) => {
         contentContainerStyle={{paddingBottom: 200}}
         data={eventData}
         renderItem={({item}) => (
-          <>
+          <View>
             {loading ? (
               <ScrollView
                 showsHorizontalScrollIndicator={false}
@@ -50,6 +50,7 @@ const HomeScreen = ({navigation, route}: RootDrawerScreenProps<'Home'>) => {
                         backgroundColor: '#ddd',
                         borderRadius: 14,
                         width: '100%',
+                        marginTop: -40,
                       }}
                       skeletonStyle={{
                         backgroundColor: '#eee',
@@ -62,7 +63,7 @@ const HomeScreen = ({navigation, route}: RootDrawerScreenProps<'Home'>) => {
             ) : (
               <EventCard {...item} />
             )}
-          </>
+          </View>
         )}
         keyExtractor={item => item.id}
         showsVerticalScrollIndicator={false}

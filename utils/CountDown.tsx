@@ -25,7 +25,13 @@ export const Countdown = ({date, end_time}: Props) => {
   if (timeBetween.asSeconds() < 0) {
     return (
       <View>
-        <Text className="text-xl text-[#080808]">Event Expired</Text>
+        <Text
+          style={{
+            fontFamily: 'Montserrat-Bold',
+          }}
+          className="text-lg text-[#080808]">
+          Expired
+        </Text>
       </View>
     );
   } else {

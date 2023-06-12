@@ -8,16 +8,15 @@ import {RootDrawerParamList} from '../types/typings';
 import {dummyUser} from '../config';
 import HomeScreen from '../screens/HomeScreen';
 import TicketScreen from '../screens/TicketScreen';
-import ScannerScreen from '../screens/ScanScreen';
-// import UserScreen from '../screens/UserScreen';
 import CreateEventScreen from '../screens/CreateEventScreen';
 import AppDrawer from '../screens/AppDrawer';
+import {useAppSelector} from '../redux-toolkit/hook';
+import ScanScreen from '../screens/ScanScreen';
 
 const Drawer = createDrawerNavigator<RootDrawerParamList>();
 
 export default function HomeDrawerNavigator() {
-  const user = dummyUser;
-
+  const user = useAppSelector(state => state.users.user);
   return (
     <Drawer.Navigator
       drawerContent={props => <AppDrawer {...props} />}
@@ -183,7 +182,7 @@ export default function HomeDrawerNavigator() {
           ),
         })}
         // @ts-ignore
-        component={ScannerScreen}
+        component={ScanScreen}
       />
       {/* <Drawer.Screen
         name="User"
