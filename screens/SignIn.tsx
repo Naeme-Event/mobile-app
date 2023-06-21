@@ -6,7 +6,10 @@ import {
   View,
   // Text,
 } from 'react-native';
-import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import {
+  GoogleSignin,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
 import {setUser} from '../redux-toolkit/authSlice';
 import {dummyUser} from '../config';
 import {useAppDispatch} from '../redux-toolkit/hook';
@@ -50,6 +53,13 @@ export default function SignIn({}) {
       }
     } catch (error) {
       console.log('Error signing in:', error);
+      if (error.code == statusCodes.IN_PROGRESS) {
+        console.log('sign in progress');
+      } else if (error.code == statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        console.log('play service not available');
+      } else if (error.code == statusCodes.SIGN_IN_CANCELLED) {
+        console.log('sign in cancelled');
+      }
       setLoading(false);
     }
   };

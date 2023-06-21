@@ -3,7 +3,6 @@ import AppSplashScreen from '../screens/SplashScreen';
 import RootNavigator from './RootNavigation';
 import {NavigationContainer} from '@react-navigation/native';
 import {useAppDispatch} from '../redux-toolkit/hook';
-import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {setUser} from '../redux-toolkit/authSlice';
 import React, {useEffect, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -15,12 +14,6 @@ export default function Navigation() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    GoogleSignin.configure({
-      scopes: ['profile'], // Add any additional scopes you require
-      webClientId:
-        '919602408222-pj590en2tl3supl5km6jba6k31oegpgv.apps.googleusercontent.com',
-      offlineAccess: false,
-    });
     (async () => {
       const jsonValue = await AsyncStorage.getItem('@tokens');
       const tokens: TokensType =
