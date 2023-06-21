@@ -9,7 +9,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import moment from 'moment';
 import {useNavigation} from '@react-navigation/native';
 import {useNavigationProps} from './EventCard';
-import {EventDataTypes} from '../types/typings';
+import {EventDataTypes, TicketDataTypes} from '../types/typings';
 import {formatCurrency} from '../utils/formatter';
 import {Countdown} from '../utils/CountDown';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -17,16 +17,23 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Octicons from 'react-native-vector-icons/Octicons';
-import {Text} from 'react-native-paper';
+import {ActivityIndicator, Text} from 'react-native-paper';
+import api from '../api';
+import {useAppSelector} from '../redux-toolkit/hook';
 
 export default function Details(props: EventDataTypes) {
-  const dateime = moment(
-    props.end_date + ' ' + props?.start_time,
-    'DD/MM/YYYY HH:mm',
-  );
   const time = moment(props.start_time, 'HH:mm').format('h:mm A');
   const date = moment(props.start_date).format('MMMM D, YYYY');
   const opacity = useRef(new Animated.Value(0)).current;
+  const user = useAppSelector(state => state.users.user);
+  const navigation = useNavigation();
+
+  // description read more
+  const [readMore, setReadMore] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [text, setText] = useState<string | null>(
+    props?.description.slice(0, 200),
+  );
 
   function fadeIn() {
     Animated.timing(opacity, {
@@ -51,15 +58,54 @@ export default function Details(props: EventDataTypes) {
     };
   }, []);
 
-  // description read more
-  const [readMore, setReadMore] = useState(false);
-  const [text, setText] = useState<string | null>(
-    props?.description.slice(0, 200),
-  );
-
-  console.log();
+  const isFree = !props.lowest_price && !props.highest_price;
   const Lng: number = -118.192395;
   const Lat: number = 33.769327;
+
+  function getZeroPriceTicketId(arr: TicketDataTypes[]) {
+    const zeroPriceTicket = arr.find(ticket => ticket.price === 0);
+    if (zeroPriceTicket?.id) {
+      const ticketId = zeroPriceTicket?.id;
+      const eventId = zeroPriceTicket?.event;
+      return {ticketId, eventId};
+    }
+  }
+
+  const hasFreeEvent = getZeroPriceTicketId(props.tickets);
+
+  async function getFreeTicket() {
+    setLoading(true);
+    console.log(props.tickets);
+    try {
+      const response = await api.post(
+        '/my-tickets/',
+        {
+          event: hasFreeEvent?.eventId,
+          ticket: hasFreeEvent?.ticketId,
+          user: user?.id,
+          quantity: 1,
+        },
+        {
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+      const data = await response.data;
+      console.log(data);
+      if (response.status === 201) {
+        navigation.navigate('Main', {screen: 'Ticket'});
+        setLoading(false);
+      } else {
+        // console.log("ticket not created");
+        setLoading(false);
+      }
+    } catch (error) {
+      setLoading(false);
+      console.log(error);
+    }
+  }
   return (
     <View className="rounded-[30px] flex-1 px-6 pb-20 bg-white -mt-7">
       <View className="">
@@ -80,13 +126,13 @@ export default function Details(props: EventDataTypes) {
           <Countdown date={props.end_date} end_time={props.end_time} />
         </Animated.View>
       </View>
-      <View className="flex-row items-center mt-3 px-2 justify-between">
-        {!props.lowest_price && !props.highest_price ? (
+      <View className="flex-row items-center mt-3 justify-between">
+        {isFree ? (
           <Text
             style={{
               fontFamily: 'Montserrat-BoldI',
             }}
-            className="text-sm text-gray-500">
+            className="text-gray-500">
             Free
           </Text>
         ) : props?.lowest_price === props?.highest_price ? (
@@ -112,6 +158,24 @@ export default function Details(props: EventDataTypes) {
           </View>
         )}
       </View>
+
+      {isFree && (
+        <TouchableOpacity
+          onPress={getFreeTicket}
+          className="bg-[#000000] mt-2 py-3 rounded-xl shadow-md">
+          {loading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text
+              style={{
+                fontFamily: 'Montserrat-Bold',
+              }}
+              className="text-[#ffffff] text-lg text-center">
+              Get Free Ticket
+            </Text>
+          )}
+        </TouchableOpacity>
+      )}
       <Animated.View
         style={[{opacity}]}
         className="flex-row items-center mt-10 gap-x-2 border-t pt-4 border-gray-200">

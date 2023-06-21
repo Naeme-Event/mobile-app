@@ -17,7 +17,6 @@ import {
 import api from '../api';
 import {useAppSelector} from '../redux-toolkit/hook';
 import {v4 as uuidv4} from 'uuid';
-import emailjs from 'emailjs-com';
 
 type Props = {
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;

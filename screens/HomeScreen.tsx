@@ -61,7 +61,7 @@ const HomeScreen = ({navigation, route}: RootDrawerScreenProps<'Home'>) => {
                 ))}
               </ScrollView>
             ) : (
-              <EventCard {...item} />
+              <>{!item.featured && <EventCard {...item} />}</>
             )}
           </View>
         )}

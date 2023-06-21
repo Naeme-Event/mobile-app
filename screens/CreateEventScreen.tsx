@@ -32,7 +32,6 @@ import {Dropdown} from 'react-native-element-dropdown';
 import {Checkbox, Text} from 'react-native-paper';
 import api from '../api';
 import {useAppSelector} from '../redux-toolkit/hook';
-import {Input} from 'react-native-elements';
 import {HeaderTitle} from '../components/Header';
 
 const data = [

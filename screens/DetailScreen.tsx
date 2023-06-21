@@ -1,5 +1,5 @@
 import {View, TouchableOpacity, Platform, Animated, Image} from 'react-native';
-import React, {useRef} from 'react';
+import React, {useRef, useState} from 'react';
 import {RootStackScreenProps} from '../types/types';
 import Details from '../components/Details';
 import {dummyUser} from '../config';
@@ -7,6 +7,7 @@ import {dummyUser} from '../config';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {Text} from 'react-native-paper';
+import moment from 'moment';
 
 export const BANNER_H = 400;
 export const TOPNAVI_H = 0;
@@ -18,6 +19,12 @@ export default function DetailScreen({
   const scrollA = useRef(new Animated.Value(0)).current;
   const user = dummyUser;
   const data = route.params;
+  let datetime = moment(data.end_date + ' ' + data.end_time).format();
+  const targetTime = moment(datetime);
+  const [currentTime, setCurrentTime] = useState(moment());
+  const timeBetween = moment.duration(targetTime.diff(currentTime));
+  const isFree = !data.lowest_price && !data.highest_price;
+
   return (
     <View
       className="flex-1"
@@ -25,17 +32,19 @@ export default function DetailScreen({
         backgroundColor: 'rgba(0, 0, 0, 0)',
       }}>
       <View className="w-full absolute bottom-0 py-4 mb-2 items-center z-10">
-        <TouchableOpacity
-          onPress={() => navigation.navigate('TicketCart', {...data})}
-          className="bg-[#000000] flex-row px-20 py-3 rounded-xl shadow-md   mx-auto">
-          <Text
-            style={{
-              fontFamily: 'Montserrat-Bold',
-            }}
-            className="text-[#ffffff] text-lg mr-1">
-            Book Now
-          </Text>
-        </TouchableOpacity>
+        {timeBetween.asSeconds() > 0 && !isFree && (
+          <TouchableOpacity
+            onPress={() => navigation.navigate('TicketCart', {...data})}
+            className="bg-[#000000] flex-row px-20 py-3 rounded-xl shadow-md   mx-auto">
+            <Text
+              style={{
+                fontFamily: 'Montserrat-Bold',
+              }}
+              className="text-[#ffffff] text-lg mr-1">
+              Book Now
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
       <Animated.ScrollView
         style={{

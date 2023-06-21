@@ -28,8 +28,6 @@ export default function Search() {
     setSearching,
     fetchInitialData,
   } = useEventContext();
-  const navigation = useNavigation<NavProps>();
-  const user = dummyUser;
 
   console.log({
     searching,
